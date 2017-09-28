@@ -1,3 +1,9 @@
+package evolution;
+
+import evolution.parts.Creature;
+import evolution.parts.Muscle;
+import evolution.parts.Node;
+import evolution.parts.Rectangle;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
@@ -6,11 +12,11 @@ import processing.event.MouseEvent;
 import java.util.ArrayList;
 
 public class Simulator extends PApplet {
+    public static ArrayList<Rectangle> rects = new ArrayList<Rectangle>(0);
+    public static float energy = 0;
+    public static float totalNodeNausea = 0;
+    public static int simulationTimer = 0;
     static Simulator self;
-    static ArrayList<Rectangle> rects = new ArrayList<Rectangle>(0);
-    static float energy = 0;
-    static float totalNodeNausea = 0;
-    static int simulationTimer = 0;
     final float windowSizeMultiplier = 0.8f;
     final int SEED = 0;
     private final Config config;
@@ -91,18 +97,18 @@ public class Simulator extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main("Simulator", args);
+        PApplet.main(Simulator.class.getCanonicalName(), args);
     }
 
-    static float rand(float l, float h) {
+    public static float rand(float l, float h) {
         return self.random(l, h);
     }
 
-    static float toMuscleUsable(float f) {
+    public static float toMuscleUsable(float f) {
         return min(max(f, 0.5f), 1.5f);
     }
 
-    static float r() {
+    public static float r() {
         return pow(rand(-1, 1), 19);
     }
 
@@ -1244,7 +1250,7 @@ public class Simulator extends PApplet {
                     fill(255, 0, 0);
                     textAlign(CENTER);
                     textFont(font, 96);
-                    text("Creature's " + fitnessName + ":", windowWidth / 2, 300);
+                    text("evolution.parts.Creature's " + fitnessName + ":", windowWidth / 2, 300);
                     text(nf(averageX * 0.2f, 0, 2) + " " + fitnessUnit, windowWidth / 2, 400);
                 } else {
                     timer = 1020;
@@ -1473,9 +1479,9 @@ public class Simulator extends PApplet {
                 }
                 fill(0);
                 textFont(font, 16);
-                text("Worst Creature", 830, 310);
-                text("Median Creature", 990, 310);
-                text("Best Creature", 1150, 310);
+                text("Worst evolution.parts.Creature", 830, 310);
+                text("Median evolution.parts.Creature", 990, 310);
+                text("Best evolution.parts.Creature", 1150, 310);
             }
             if (justGotBack) justGotBack = false;
         }
@@ -1507,7 +1513,7 @@ public class Simulator extends PApplet {
         pushMatrix();
         translate(x, y);
         scale(size);
-        text("Creature ID: " + id, 0, 32);
+        text("evolution.parts.Creature ID: " + id, 0, 32);
         if (speed > 60) {
             timeShow = (int) ((timer + creaturesTested * 37) / 60) % 15;
         } else {

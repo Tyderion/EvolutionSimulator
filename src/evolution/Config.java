@@ -1,3 +1,5 @@
+package evolution;
+
 public class Config {
     private static final int ENERGY_DIRECTION = 1; // if 1, it'll count up how much energy is used.  if -1, it'll count down from the baseline energy, and when energy hits 0, the creature dies.
     private static final float BIG_MUTATION_CHANCE = 0.06f;

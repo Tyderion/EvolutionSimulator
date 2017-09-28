@@ -1,16 +1,20 @@
+package evolution.parts;
+
+import evolution.Config;
+import evolution.Simulator;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
 import java.util.ArrayList;
 
-class Node {
+public class Node {
+    public float x, y, vx, vy, prevX, prevY, pvx, pvy, m, f, value, valueToBe;
+    public int operation, axon1, axon2;
+    public boolean safeInput;
+    public float pressure;
     private Config config;
-    float x, y, vx, vy, prevX, prevY, pvx, pvy, m, f, value, valueToBe;
-    int operation, axon1, axon2;
-    boolean safeInput;
-    float pressure;
 
-    Node(Config config, float tx, float ty, float tvx, float tvy, float tm, float tf, float val, int op, int a1, int a2) {
+    public Node(Config config, float tx, float ty, float tvx, float tvy, float tm, float tf, float val, int op, int a1, int a2) {
         this.config = config;
         prevX = x = tx;
         prevY = y = ty;
@@ -25,7 +29,7 @@ class Node {
         pressure = 0;
     }
 
-    void applyForces() {
+    public void applyForces() {
         vx *= config.getAirFriction();
         vy *= config.getAirFriction();
         y += vy;
@@ -37,7 +41,7 @@ class Node {
 
     }
 
-    void applyGravity() {
+    public void applyGravity() {
         vy += config.getGravity();
     }
 
@@ -60,7 +64,7 @@ class Node {
         }
     }
 
-    void hitWalls() {
+    public void hitWalls() {
         pressure = 0;
         float dif = y + m / 2;
         if (dif >= 0 && config.hasGround()) {
@@ -144,7 +148,7 @@ class Node {
         prevX = x;
     }
 
-    void doMath(int i, ArrayList<Node> n) {
+    public void doMath(int i, ArrayList<Node> n) {
         float axonValue1 = n.get(axon1).value;
         float axonValue2 = n.get(axon2).value;
         if (operation == 0) { // constant
@@ -173,15 +177,15 @@ class Node {
         }
     }
 
-    void realizeMathValues(int i) {
+    public void realizeMathValues(int i) {
         value = valueToBe;
     }
 
-    Node copyNode() {
+    public Node copyNode() {
         return (new Node(config, x, y, 0, 0, m, f, value, operation, axon1, axon2));
     }
 
-    Node modifyNode(float mutability, int nodeNum) {
+    public Node modifyNode(float mutability, int nodeNum) {
         float newX = x + Simulator.r() * 0.5f * mutability;
         float newY = y + Simulator.r() * 0.5f * mutability;
         float newM = m + Simulator.r() * 0.1f * mutability;

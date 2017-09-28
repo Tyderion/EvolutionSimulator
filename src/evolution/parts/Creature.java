@@ -1,19 +1,23 @@
+package evolution.parts;
+
+import evolution.Config;
+import evolution.Simulator;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
 import java.util.ArrayList;
 
-class Creature {
+public class Creature {
     private Config config;
-    ArrayList<Node> n;
-    ArrayList<Muscle> m;
-    float d;
-    int id;
-    boolean alive;
-    float creatureTimer;
-    float mutability;
+    public ArrayList<Node> n;
+    public ArrayList<Muscle> m;
+    public float d;
+    public int id;
+    public boolean alive;
+    public float creatureTimer;
+    public float mutability;
 
-    Creature(Config config, int tid, ArrayList<Node> tn, ArrayList<Muscle> tm, float td, boolean talive, float tct, float tmut) {
+    public Creature(Config config, int tid, ArrayList<Node> tn, ArrayList<Muscle> tm, float td, boolean talive, float tct, float tmut) {
         this.config = config;
         id = tid;
         m = tm;
@@ -24,7 +28,7 @@ class Creature {
         mutability = tmut;
     }
 
-    Creature modified(int id) {
+    public Creature modified(int id) {
         Creature modifiedCreature = new Creature(config, id,
                 new ArrayList<Node>(0), new ArrayList<Muscle>(0), 0, true, creatureTimer + Simulator.r() * 16 * mutability, PApplet.min(mutability * Simulator.rand(0.8f, 1.25f), 2));
         for (int i = 0; i < n.size(); i++) {
@@ -51,7 +55,7 @@ class Creature {
         return modifiedCreature;
     }
 
-    void checkForOverlap() {
+    public void checkForOverlap() {
         ArrayList<Integer> bads = new ArrayList<Integer>();
         for (int i = 0; i < m.size(); i++) {
             for (int j = i + 1; j < m.size(); j++) {
@@ -72,7 +76,7 @@ class Creature {
         }
     }
 
-    void checkForLoneNodes() {
+    public void checkForLoneNodes() {
         if (n.size() >= 3) {
             for (int i = 0; i < n.size(); i++) {
                 int connections = 0;
@@ -94,7 +98,7 @@ class Creature {
         }
     }
 
-    void checkForBadAxons() {
+    public void checkForBadAxons() {
         for (int i = 0; i < n.size(); i++) {
             Node ni = n.get(i);
             if (ni.axon1 >= n.size()) {
@@ -213,7 +217,7 @@ class Creature {
         m.remove(choice);
     }
 
-    Creature copyCreature(int newID) {
+    public Creature copyCreature(int newID) {
         ArrayList<Node> n2 = new ArrayList<Node>(0);
         ArrayList<Muscle> m2 = new ArrayList<Muscle>(0);
         for (int i = 0; i < n.size(); i++) {
