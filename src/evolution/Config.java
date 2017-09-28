@@ -1,5 +1,7 @@
 package evolution;
 
+import org.jetbrains.annotations.Contract;
+
 public class Config {
     private static final int ENERGY_DIRECTION = 1; // if 1, it'll count up how much energy is used.  if -1, it'll count down from the baseline energy, and when energy hits 0, the creature dies.
     private static final float BIG_MUTATION_CHANCE = 0.06f;
@@ -13,6 +15,10 @@ public class Config {
     private static final float NAUSEA_UNIT = 5;
     private static final float GRAVITY = 0.005f;
     private static final float AIR_FRICTION = 0.95f;
+
+    public final float getScaleToFixBug() {
+        return 1000.0f;
+    }
 
     public int getEnergyDirection() {
         return ENERGY_DIRECTION;

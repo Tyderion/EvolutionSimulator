@@ -5,6 +5,7 @@ import evolution.parts.Muscle;
 import evolution.parts.Node;
 import evolution.parts.Rectangle;
 import processing.core.PApplet;
+import processing.core.PConstants;
 import processing.core.PFont;
 import processing.core.PGraphics;
 import processing.event.MouseEvent;
@@ -26,10 +27,11 @@ public class Simulator extends PApplet {
     ArrayList<Integer[]> speciesCounts = new ArrayList<Integer[]>(0);
     ArrayList<Integer> topSpeciesCounts = new ArrayList<Integer>(0);
     ArrayList<Creature> creatureDatabase = new ArrayList<Creature>(0);
-    PGraphics graphImage;
-    PGraphics screenImage;
-    PGraphics popUpImage;
-    PGraphics segBarImage;
+    private Simulation simulation;
+//    PGraphics graphImage;
+//    PGraphics screenImage;
+//    PGraphics popUpImage;
+//    PGraphics segBarImage;
     int histBarsPerMeter = 5;
     String[] operationNames = {"#", "time", "px", "py", "+", "-", "*", "÷", "%", "sin", "sig", "pres"};
     String fitnessUnit = "m";
@@ -140,22 +142,22 @@ public class Simulator extends PApplet {
                 }
             }
         } else if (toImage == 2) {
-            popUpImage.noStroke();
-            popUpImage.fill(0, 130, 0);
+            simulation.popUpImage.noStroke();
+            simulation.popUpImage.fill(0, 130, 0);
             if (config.hasGround())
-                popUpImage.rect((camX - camZoom * 300.0f) * scaleToFixBug, 0 * scaleToFixBug, (camZoom * 600.0f) * scaleToFixBug, (camZoom * 600.0f) * scaleToFixBug);
+                simulation.popUpImage.rect((camX - camZoom * 300.0f) * scaleToFixBug, 0 * scaleToFixBug, (camZoom * 600.0f) * scaleToFixBug, (camZoom * 600.0f) * scaleToFixBug);
             float ww = 450;
             float wh = 450;
             for (int i = 0; i < rects.size(); i++) {
                 Rectangle r = rects.get(i);
-                popUpImage.rect(r.x1 * scaleToFixBug, r.y1 * scaleToFixBug, (r.x2 - r.x1) * scaleToFixBug, (r.y2 - r.y1) * scaleToFixBug);
+                simulation.popUpImage.rect(r.x1 * scaleToFixBug, r.y1 * scaleToFixBug, (r.x2 - r.x1) * scaleToFixBug, (r.y2 - r.y1) * scaleToFixBug);
             }
             if (config.getHazelStairs() > 0) {
                 for (int i = stairDrawStart; i < stairDrawStart + 20; i++) {
-                    popUpImage.fill(255, 255, 255, 128);
-                    popUpImage.rect((averageX - 20) * scaleToFixBug, -config.getHazelStairs() * i * scaleToFixBug, 40 * scaleToFixBug, config.getHazelStairs() * 0.3f * scaleToFixBug);
-                    popUpImage.fill(255, 255, 255, 255);
-                    popUpImage.rect((averageX - 20) * scaleToFixBug, -config.getHazelStairs() * i * scaleToFixBug, 40 * scaleToFixBug, config.getHazelStairs() * 0.15f * scaleToFixBug);
+                    simulation.popUpImage.fill(255, 255, 255, 128);
+                    simulation.popUpImage.rect((averageX - 20) * scaleToFixBug, -config.getHazelStairs() * i * scaleToFixBug, 40 * scaleToFixBug, config.getHazelStairs() * 0.3f * scaleToFixBug);
+                    simulation.popUpImage.fill(255, 255, 255, 255);
+                    simulation.popUpImage.rect((averageX - 20) * scaleToFixBug, -config.getHazelStairs() * i * scaleToFixBug, 40 * scaleToFixBug, config.getHazelStairs() * 0.15f * scaleToFixBug);
                 }
             }
         }
@@ -180,31 +182,31 @@ public class Simulator extends PApplet {
             text(nf(ni.value, 0, 2), (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY2 + y) * scaleToFixBug);
             text(operationNames[ni.operation], (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY1 + y) * scaleToFixBug);
         } else if (toImage == 1) {
-            screenImage.fill(c);
-            screenImage.noStroke();
-            screenImage.ellipse((ni.x + x) * scaleToFixBug, (ni.y + y) * scaleToFixBug, ni.m * scaleToFixBug, ni.m * scaleToFixBug);
+            simulation.screenImage.fill(c);
+            simulation.screenImage.noStroke();
+            simulation.screenImage.ellipse((ni.x + x) * scaleToFixBug, (ni.y + y) * scaleToFixBug, ni.m * scaleToFixBug, ni.m * scaleToFixBug);
             if (ni.f >= 0.5) {
-                screenImage.fill(255);
+                simulation.screenImage.fill(255);
             } else {
-                screenImage.fill(0);
+                simulation.screenImage.fill(0);
             }
-            screenImage.textAlign(CENTER);
-            screenImage.textFont(font, 0.4f * ni.m * scaleToFixBug);
-            screenImage.text(nf(ni.value, 0, 2), (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY2 + y) * scaleToFixBug);
-            screenImage.text(operationNames[ni.operation], (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY1 + y) * scaleToFixBug);
+            simulation.screenImage.textAlign(CENTER);
+            simulation.screenImage.textFont(font, 0.4f * ni.m * scaleToFixBug);
+            simulation.screenImage.text(nf(ni.value, 0, 2), (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY2 + y) * scaleToFixBug);
+            simulation.screenImage.text(operationNames[ni.operation], (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY1 + y) * scaleToFixBug);
         } else if (toImage == 2) {
-            popUpImage.fill(c);
-            popUpImage.noStroke();
-            popUpImage.ellipse((ni.x + x) * scaleToFixBug, (ni.y + y) * scaleToFixBug, ni.m * scaleToFixBug, ni.m * scaleToFixBug);
+            simulation.popUpImage.fill(c);
+            simulation.popUpImage.noStroke();
+            simulation.popUpImage.ellipse((ni.x + x) * scaleToFixBug, (ni.y + y) * scaleToFixBug, ni.m * scaleToFixBug, ni.m * scaleToFixBug);
             if (ni.f >= 0.5) {
-                popUpImage.fill(255);
+                simulation.popUpImage.fill(255);
             } else {
-                popUpImage.fill(0);
+                simulation.popUpImage.fill(0);
             }
-            popUpImage.textAlign(CENTER);
-            popUpImage.textFont(font, 0.4f * ni.m * scaleToFixBug);
-            popUpImage.text(nf(ni.value, 0, 2), (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY2 + y) * scaleToFixBug);
-            popUpImage.text(operationNames[ni.operation], (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY1 + y) * scaleToFixBug);
+            simulation.popUpImage.textAlign(CENTER);
+            simulation.popUpImage.textFont(font, 0.4f * ni.m * scaleToFixBug);
+            simulation.popUpImage.text(nf(ni.value, 0, 2), (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY2 + y) * scaleToFixBug);
+            simulation.popUpImage.text(operationNames[ni.operation], (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY1 + y) * scaleToFixBug);
         }
     }
 
@@ -239,19 +241,19 @@ public class Simulator extends PApplet {
             line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug);
             noStroke();
         } else if (toImage == 1) {
-            screenImage.stroke(axonColor);
-            screenImage.strokeWeight(0.03f * scaleToFixBug);
-            screenImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, x2 * scaleToFixBug, y2 * scaleToFixBug);
-            screenImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug);
-            screenImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug);
-            popUpImage.noStroke();
+            simulation.screenImage.stroke(axonColor);
+            simulation.screenImage.strokeWeight(0.03f * scaleToFixBug);
+            simulation.screenImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, x2 * scaleToFixBug, y2 * scaleToFixBug);
+            simulation.screenImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug);
+            simulation.screenImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug);
+            simulation.popUpImage.noStroke();
         } else if (toImage == 2) {
-            popUpImage.stroke(axonColor);
-            popUpImage.strokeWeight(0.03f * scaleToFixBug);
-            popUpImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, x2 * scaleToFixBug, y2 * scaleToFixBug);
-            popUpImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug);
-            popUpImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug);
-            popUpImage.noStroke();
+            simulation.popUpImage.stroke(axonColor);
+            simulation.popUpImage.strokeWeight(0.03f * scaleToFixBug);
+            simulation.popUpImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, x2 * scaleToFixBug, y2 * scaleToFixBug);
+            simulation.popUpImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug);
+            simulation.popUpImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug);
+            simulation.popUpImage.noStroke();
         }
     }
 
@@ -267,13 +269,13 @@ public class Simulator extends PApplet {
             stroke(70, 35, 0, mi.rigidity * 3000);
             line((ni1.x + x) * scaleToFixBug, (ni1.y + y) * scaleToFixBug, (ni2.x + x) * scaleToFixBug, (ni2.y + y) * scaleToFixBug);
         } else if (toImage == 1) {
-            screenImage.strokeWeight(w * scaleToFixBug);
-            screenImage.stroke(70, 35, 0, mi.rigidity * 3000);
-            screenImage.line((ni1.x + x) * scaleToFixBug, (ni1.y + y) * scaleToFixBug, (ni2.x + x) * scaleToFixBug, (ni2.y + y) * scaleToFixBug);
+            simulation.screenImage.strokeWeight(w * scaleToFixBug);
+            simulation.screenImage.stroke(70, 35, 0, mi.rigidity * 3000);
+            simulation.screenImage.line((ni1.x + x) * scaleToFixBug, (ni1.y + y) * scaleToFixBug, (ni2.x + x) * scaleToFixBug, (ni2.y + y) * scaleToFixBug);
         } else if (toImage == 2) {
-            popUpImage.strokeWeight(w * scaleToFixBug);
-            popUpImage.stroke(70, 35, 0, mi.rigidity * 3000);
-            popUpImage.line((ni1.x + x) * scaleToFixBug, (ni1.y + y) * scaleToFixBug, (ni2.x + x) * scaleToFixBug, (ni2.y + y) * scaleToFixBug);
+            simulation.popUpImage.strokeWeight(w * scaleToFixBug);
+            simulation.popUpImage.stroke(70, 35, 0, mi.rigidity * 3000);
+            simulation.popUpImage.line((ni1.x + x) * scaleToFixBug, (ni1.y + y) * scaleToFixBug, (ni2.x + x) * scaleToFixBug, (ni2.y + y) * scaleToFixBug);
         }
     }
 
@@ -292,15 +294,15 @@ public class Simulator extends PApplet {
                 textFont(font, 0.4f * averageMass * scaleToFixBug);
                 text(nf(toMuscleUsable(n.get(mi.axon).value), 0, 2), muscleMidX * scaleToFixBug, muscleMidY * scaleToFixBug);
             } else if (toImage == 1) {
-                screenImage.fill(axonColor);
-                screenImage.textAlign(CENTER);
-                screenImage.textFont(font, 0.4f * averageMass * scaleToFixBug);
-                screenImage.text(nf(toMuscleUsable(n.get(mi.axon).value), 0, 2), muscleMidX * scaleToFixBug, muscleMidY * scaleToFixBug);
+                simulation.screenImage.fill(axonColor);
+                simulation.screenImage.textAlign(CENTER);
+                simulation.screenImage.textFont(font, 0.4f * averageMass * scaleToFixBug);
+                simulation.screenImage.text(nf(toMuscleUsable(n.get(mi.axon).value), 0, 2), muscleMidX * scaleToFixBug, muscleMidY * scaleToFixBug);
             } else if (toImage == 2) {
-                popUpImage.fill(axonColor);
-                popUpImage.textAlign(CENTER);
-                popUpImage.textFont(font, 0.4f * averageMass * scaleToFixBug);
-                popUpImage.text(nf(toMuscleUsable(n.get(mi.axon).value), 0, 2), muscleMidX * scaleToFixBug, muscleMidY * scaleToFixBug);
+                simulation.popUpImage.fill(axonColor);
+                simulation.popUpImage.textAlign(CENTER);
+                simulation.popUpImage.textFont(font, 0.4f * averageMass * scaleToFixBug);
+                simulation.popUpImage.text(nf(toMuscleUsable(n.get(mi.axon).value), 0, 2), muscleMidX * scaleToFixBug, muscleMidY * scaleToFixBug);
             }
         }
     }
@@ -322,16 +324,16 @@ public class Simulator extends PApplet {
                 }
             }
         } else if (toImage == 2) {
-            popUpImage.textAlign(CENTER);
-            popUpImage.textFont(font, postFontSize * scaleToFixBug);
-            popUpImage.noStroke();
+            simulation.popUpImage.textAlign(CENTER);
+            simulation.popUpImage.textFont(font, postFontSize * scaleToFixBug);
+            simulation.popUpImage.noStroke();
             for (int postY = startPostY; postY <= startPostY + 8; postY += 4) {
                 for (int i = (int) (averageX / 5 - 5); i <= (int) (averageX / 5 + 5); i++) {
-                    popUpImage.fill(255);
-                    popUpImage.rect((i * 5 - 0.1f) * scaleToFixBug, (-3.0f + postY) * scaleToFixBug, 0.2f * scaleToFixBug, 3 * scaleToFixBug);
-                    popUpImage.rect((i * 5 - 1) * scaleToFixBug, (-3.0f + postY) * scaleToFixBug, 2 * scaleToFixBug, 1 * scaleToFixBug);
-                    popUpImage.fill(120);
-                    popUpImage.text(i + " m", i * 5 * scaleToFixBug, (-2.17f + postY) * scaleToFixBug);
+                    simulation.popUpImage.fill(255);
+                    simulation.popUpImage.rect((i * 5 - 0.1f) * scaleToFixBug, (-3.0f + postY) * scaleToFixBug, 0.2f * scaleToFixBug, 3 * scaleToFixBug);
+                    simulation.popUpImage.rect((i * 5 - 1) * scaleToFixBug, (-3.0f + postY) * scaleToFixBug, 2 * scaleToFixBug, 1 * scaleToFixBug);
+                    simulation.popUpImage.fill(120);
+                    simulation.popUpImage.text(i + " m", i * 5 * scaleToFixBug, (-2.17f + postY) * scaleToFixBug);
                 }
             }
         }
@@ -353,8 +355,8 @@ public class Simulator extends PApplet {
     }
 
     void drawGraphImage() {
-        image(graphImage, 50, 180, 650, 380);
-        image(segBarImage, 50, 580, 650, 100);
+        image(simulation.graphImage, 50, 180, 650, 380);
+        image(simulation.segBarImage, 50, 580, 650, 100);
         if (gen >= 1) {
             stroke(0, 160, 0, 255);
             strokeWeight(3);
@@ -401,14 +403,14 @@ public class Simulator extends PApplet {
     }
 
     void drawGraph(int graphWidth, int graphHeight) {
-        graphImage.beginDraw();
-        graphImage.smooth();
-        graphImage.background(220);
+        simulation.graphImage.beginDraw();
+        simulation.graphImage.smooth();
+        simulation.graphImage.background(220);
         if (gen >= 1) {
             drawLines(90, (int) (graphHeight * 0.05), graphWidth - 90, (int) (graphHeight * 0.9));
             drawSegBars(90, 0, graphWidth - 90, 150);
         }
-        graphImage.endDraw();
+        simulation.graphImage.endDraw();
     }
 
     void drawLines(int x, int y, int graphWidth, int graphHeight) {
@@ -419,17 +421,17 @@ public class Simulator extends PApplet {
         float meterHeight = (float) (graphHeight) / (best - worst);
         float zero = (best / (best - worst)) * gh;
         float unit = setUnit(best, worst);
-        graphImage.stroke(150);
-        graphImage.strokeWeight(2);
-        graphImage.fill(150);
-        graphImage.textFont(font, 18);
-        graphImage.textAlign(RIGHT);
+        simulation.graphImage.stroke(150);
+        simulation.graphImage.strokeWeight(2);
+        simulation.graphImage.fill(150);
+        simulation.graphImage.textFont(font, 18);
+        simulation.graphImage.textAlign(RIGHT);
         for (float i = ceil((worst - (best - worst) / 18.0f) / unit) * unit; i < best + (best - worst) / 18.0f; i += unit) {
             float lineY = y - i * meterHeight + zero;
-            graphImage.line(x, lineY, graphWidth + x, lineY);
-            graphImage.text(showUnit(i, unit) + " " + fitnessUnit, x - 5, lineY + 4);
+            simulation.graphImage.line(x, lineY, graphWidth + x, lineY);
+            simulation.graphImage.text(showUnit(i, unit) + " " + fitnessUnit, x - 5, lineY + 4);
         }
-        graphImage.stroke(0);
+        simulation.graphImage.stroke(0);
         for (int i = 0; i < 29; i++) {
             int k;
             if (i == 28) {
@@ -440,29 +442,29 @@ public class Simulator extends PApplet {
                 k = i + 1;
             }
             if (k == 14) {
-                graphImage.stroke(255, 0, 0, 255);
-                graphImage.strokeWeight(5);
+                simulation.graphImage.stroke(255, 0, 0, 255);
+                simulation.graphImage.strokeWeight(5);
             } else {
                 stroke(0);
                 if (k == 0 || k == 28 || (k >= 10 && k <= 18)) {
-                    graphImage.strokeWeight(3);
+                    simulation.graphImage.strokeWeight(3);
                 } else {
-                    graphImage.strokeWeight(1);
+                    simulation.graphImage.strokeWeight(1);
                 }
             }
             for (int j = 0; j < gen; j++) {
-                graphImage.line(x + j * genWidth, (-percentile.get(j)[k]) * meterHeight + zero + y,
+                simulation.graphImage.line(x + j * genWidth, (-percentile.get(j)[k]) * meterHeight + zero + y,
                         x + (j + 1) * genWidth, (-percentile.get(j + 1)[k]) * meterHeight + zero + y);
             }
         }
     }
 
     void drawSegBars(int x, int y, int graphWidth, int graphHeight) {
-        segBarImage.beginDraw();
-        segBarImage.smooth();
-        segBarImage.noStroke();
-        segBarImage.colorMode(HSB, 1);
-        segBarImage.background(0, 0, 0.5f);
+        simulation.segBarImage.beginDraw();
+        simulation.segBarImage.smooth();
+        simulation.segBarImage.noStroke();
+        simulation.segBarImage.colorMode(HSB, 1);
+        simulation.segBarImage.background(0, 0, 0.5f);
         float genWidth = (float) (graphWidth) / gen;
         int gensPerBar = floor(gen / 500) + 1;
         for (int i = 0; i < gen; i += gensPerBar) {
@@ -471,16 +473,16 @@ public class Simulator extends PApplet {
             float barX2 = x + i2 * genWidth;
             int cum = 0;
             for (int j = 0; j < 100; j++) {
-                segBarImage.fill(getColor(j, false));
-                segBarImage.beginShape();
-                segBarImage.vertex(barX1, y + speciesCounts.get(i)[j] / 1000.0f * graphHeight);
-                segBarImage.vertex(barX1, y + speciesCounts.get(i)[j + 1] / 1000.0f * graphHeight);
-                segBarImage.vertex(barX2, y + speciesCounts.get(i2)[j + 1] / 1000.0f * graphHeight);
-                segBarImage.vertex(barX2, y + speciesCounts.get(i2)[j] / 1000.0f * graphHeight);
-                segBarImage.endShape();
+                simulation.segBarImage.fill(getColor(j, false));
+                simulation.segBarImage.beginShape();
+                simulation.segBarImage.vertex(barX1, y + speciesCounts.get(i)[j] / 1000.0f * graphHeight);
+                simulation.segBarImage.vertex(barX1, y + speciesCounts.get(i)[j + 1] / 1000.0f * graphHeight);
+                simulation.segBarImage.vertex(barX2, y + speciesCounts.get(i2)[j + 1] / 1000.0f * graphHeight);
+                simulation.segBarImage.vertex(barX2, y + speciesCounts.get(i2)[j] / 1000.0f * graphHeight);
+                simulation.segBarImage.endShape();
             }
         }
-        segBarImage.endDraw();
+        simulation.segBarImage.endDraw();
         colorMode(RGB, 255);
     }
 
@@ -750,12 +752,12 @@ public class Simulator extends PApplet {
     }
 
     void drawScreenImage(int stage) {
-        screenImage.beginDraw();
-        screenImage.pushMatrix();
-        screenImage.scale(15.0f / scaleToFixBug);
-        screenImage.smooth();
-        screenImage.background(220, 253, 102);
-        screenImage.noStroke();
+        simulation.screenImage.beginDraw();
+        simulation.screenImage.pushMatrix();
+        simulation.screenImage.scale(15.0f / scaleToFixBug);
+        simulation.screenImage.smooth();
+        simulation.screenImage.background(220, 253, 102);
+        simulation.screenImage.noStroke();
         for (int j = 0; j < 1000; j++) {
             Creature cj = c2.get(j);
             if (stage == 3) cj = c[cj.id - (gen * 1000) - 1001];
@@ -770,31 +772,31 @@ public class Simulator extends PApplet {
             drawCreature(cj, x * 3 + 5.5f, y * 2.5f + 4, 1);
         }
         timer = 0;
-        screenImage.popMatrix();
-        screenImage.pushMatrix();
-        screenImage.scale(1.5f);
+        simulation.screenImage.popMatrix();
+        simulation.screenImage.pushMatrix();
+        simulation.screenImage.scale(1.5f);
 
-        screenImage.textAlign(CENTER);
-        screenImage.textFont(font, 24);
-        screenImage.fill(100, 100, 200);
-        screenImage.noStroke();
+        simulation.screenImage.textAlign(CENTER);
+        simulation.screenImage.textFont(font, 24);
+        simulation.screenImage.fill(100, 100, 200);
+        simulation.screenImage.noStroke();
         if (stage == 0) {
-            screenImage.rect(900, 664, 260, 40);
-            screenImage.fill(0);
-            screenImage.text("All 1,000 creatures have been tested.  Now let's sort them!", windowWidth / 2 - 200, 690);
-            screenImage.text("Sort", windowWidth - 250, 690);
+            simulation.screenImage.rect(900, 664, 260, 40);
+            simulation.screenImage.fill(0);
+            simulation.screenImage.text("All 1,000 creatures have been tested.  Now let's sort them!", windowWidth / 2 - 200, 690);
+            simulation.screenImage.text("Sort", windowWidth - 250, 690);
         } else if (stage == 1) {
-            screenImage.rect(900, 670, 260, 40);
-            screenImage.fill(0);
-            screenImage.text("Fastest creatures at the top!", windowWidth / 2, 30);
-            screenImage.text("Slowest creatures at the bottom. (Going backward = slow)", windowWidth / 2 - 200, 700);
-            screenImage.text("Kill 500", windowWidth - 250, 700);
+            simulation.screenImage.rect(900, 670, 260, 40);
+            simulation.screenImage.fill(0);
+            simulation.screenImage.text("Fastest creatures at the top!", windowWidth / 2, 30);
+            simulation.screenImage.text("Slowest creatures at the bottom. (Going backward = slow)", windowWidth / 2 - 200, 700);
+            simulation.screenImage.text("Kill 500", windowWidth - 250, 700);
         } else if (stage == 2) {
-            screenImage.rect(1050, 670, 160, 40);
-            screenImage.fill(0);
-            screenImage.text("Faster creatures are more likely to survive because they can outrun their predators.  Slow creatures get eaten.", windowWidth / 2, 30);
-            screenImage.text("Because of random chance, a few fast ones get eaten, while a few slow ones survive.", windowWidth / 2 - 130, 700);
-            screenImage.text("Reproduce", windowWidth - 150, 700);
+            simulation.screenImage.rect(1050, 670, 160, 40);
+            simulation.screenImage.fill(0);
+            simulation.screenImage.text("Faster creatures are more likely to survive because they can outrun their predators.  Slow creatures get eaten.", windowWidth / 2, 30);
+            simulation.screenImage.text("Because of random chance, a few fast ones get eaten, while a few slow ones survive.", windowWidth / 2 - 130, 700);
+            simulation.screenImage.text("Reproduce", windowWidth - 150, 700);
             for (int j = 0; j < 1000; j++) {
                 Creature cj = c2.get(j);
                 int x = j % 40;
@@ -802,18 +804,18 @@ public class Simulator extends PApplet {
                 if (cj.alive) {
                     drawCreature(cj, x * 30 + 55, y * 25 + 40, 0);
                 } else {
-                    screenImage.rect(x * 30 + 40, y * 25 + 17, 30, 25);
+                    simulation.screenImage.rect(x * 30 + 40, y * 25 + 17, 30, 25);
                 }
             }
         } else if (stage == 3) {
-            screenImage.rect(1050, 670, 160, 40);
-            screenImage.fill(0);
-            screenImage.text("These are the 1000 creatures of generation #" + (gen + 2) + ".", windowWidth / 2, 30);
-            screenImage.text("What perils will they face?  Find out next time!", windowWidth / 2 - 130, 700);
-            screenImage.text("Back", windowWidth - 150, 700);
+            simulation.screenImage.rect(1050, 670, 160, 40);
+            simulation.screenImage.fill(0);
+            simulation.screenImage.text("These are the 1000 creatures of generation #" + (gen + 2) + ".", windowWidth / 2, 30);
+            simulation.screenImage.text("What perils will they face?  Find out next time!", windowWidth / 2 - 130, 700);
+            simulation.screenImage.text("Back", windowWidth - 150, 700);
         }
-        screenImage.endDraw();
-        screenImage.popMatrix();
+        simulation.screenImage.endDraw();
+        simulation.screenImage.popMatrix();
     }
 
     void drawpopUpImage() {
@@ -821,25 +823,25 @@ public class Simulator extends PApplet {
         setAverages();
         camX += (averageX - camX) * 0.1;
         camY += (averageY - camY) * 0.1;
-        popUpImage.beginDraw();
-        popUpImage.smooth();
+        simulation.popUpImage.beginDraw();
+        simulation.popUpImage.smooth();
 
-        popUpImage.pushMatrix();
-        popUpImage.translate(225, 225);
-        popUpImage.scale(1.0f / camZoom / scaleToFixBug);
-        popUpImage.translate(-camX * scaleToFixBug, -camY * scaleToFixBug);
+        simulation.popUpImage.pushMatrix();
+        simulation.popUpImage.translate(225, 225);
+        simulation.popUpImage.scale(1.0f / camZoom / scaleToFixBug);
+        simulation.popUpImage.translate(-camX * scaleToFixBug, -camY * scaleToFixBug);
 
         if (simulationTimer < 900) {
-            popUpImage.background(120, 200, 255);
+            simulation.popUpImage.background(120, 200, 255);
         } else {
-            popUpImage.background(60, 100, 128);
+            simulation.popUpImage.background(60, 100, 128);
         }
         drawPosts(2);
         drawGround(2);
         drawCreaturePieces(n, m, 0, 0, 2);
-        popUpImage.noStroke();
-        popUpImage.endDraw();
-        popUpImage.popMatrix();
+        simulation.popUpImage.noStroke();
+        simulation.popUpImage.endDraw();
+        simulation.popUpImage.popMatrix();
     }
 
     void drawCreature(Creature cj, float x, float y, int toImage) {
@@ -983,7 +985,7 @@ public class Simulator extends PApplet {
             //py = min(max(py,0),420);
             int px2 = min(max(px - 90, 10), 970);
             drawpopUpImage();
-            image(popUpImage, px2, py2, 300, 300);
+            image(simulation.popUpImage, px2, py2, 300, 300);
 
     /*fill(255, 255, 255);
     rect(px2+240, py2+10, 50, 30);
@@ -1032,18 +1034,21 @@ public class Simulator extends PApplet {
         speciesCounts.add(beginSpecies);
         topSpeciesCounts.add(0);
 
-        graphImage = createGraphics(975, 570);
-        screenImage = createGraphics(1920, 1080);
-        popUpImage = createGraphics(450, 450);
-        segBarImage = createGraphics(975, 150);
-        segBarImage.beginDraw();
-        segBarImage.smooth();
-        segBarImage.background(220);
-        segBarImage.endDraw();
-        popUpImage.beginDraw();
-        popUpImage.smooth();
-        popUpImage.background(220);
-        popUpImage.endDraw();
+        PGraphics graphImage = createGraphics(975, 570);
+        PGraphics screenImage = createGraphics(1920, 1080);
+        PGraphics popUpImage = createGraphics(450, 450);
+        PGraphics segBarImage = createGraphics(975, 150);
+
+        simulation = new Simulation(graphImage, screenImage, popUpImage, segBarImage);
+
+        simulation.segBarImage.beginDraw();
+        simulation.segBarImage.smooth();
+        simulation.segBarImage.background(220);
+        simulation.segBarImage.endDraw();
+        simulation.popUpImage.beginDraw();
+        simulation.popUpImage.smooth();
+        simulation.popUpImage.background(220);
+        simulation.popUpImage.endDraw();
 
         font = loadFont("Helvetica-Bold-96.vlw");
         textFont(font, 96);
@@ -1437,7 +1442,7 @@ public class Simulator extends PApplet {
             }
         }
         if (menu % 2 == 1 && abs(menu - 10) <= 3) {
-            image(screenImage, 0, 0, 1280, 720);
+            image(simulation.screenImage, 0, 0, 1280, 720);
         }
         if (menu == 1 || gensToDo >= 1) {
             mX = mouseX / windowSizeMultiplier;
