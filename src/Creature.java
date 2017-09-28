@@ -25,23 +25,23 @@ class Creature {
     }
     Creature modified(int id) {
         Creature modifiedCreature = new Creature(mainApp, id,
-                new ArrayList<Node>(0), new ArrayList<Muscle>(0), 0, true, creatureTimer+ mainApp.r()*16*mutability, PApplet.min(mutability* mainApp.random(0.8f, 1.25f), 2));
+                new ArrayList<Node>(0), new ArrayList<Muscle>(0), 0, true, creatureTimer+ MainApp.r()*16*mutability, PApplet.min(mutability* mainApp.random(0.8f, 1.25f), 2));
         for (int i = 0; i < n.size(); i++) {
             modifiedCreature.n.add(n.get(i).modifyNode(mutability,n.size()));
         }
         for (int i = 0; i < m.size(); i++) {
             modifiedCreature.m.add(m.get(i).modifyMuscle(n.size(), mutability));
         }
-        if (mainApp.random(0, 1) < mainApp.bigMutationChance*mutability || n.size() <= 2) { //Add a node
+        if (mainApp.random(0, 1) < MainApp.bigMutationChance *mutability || n.size() <= 2) { //Add a node
             modifiedCreature.addRandomNode();
         }
-        if (mainApp.random(0, 1) < mainApp.bigMutationChance*mutability) { //Add a muscle
+        if (mainApp.random(0, 1) < MainApp.bigMutationChance *mutability) { //Add a muscle
             modifiedCreature.addRandomMuscle(-1, -1);
         }
-        if (mainApp.random(0, 1) < mainApp.bigMutationChance*mutability && modifiedCreature.n.size() >= 4) { //Remove a node
+        if (mainApp.random(0, 1) < MainApp.bigMutationChance *mutability && modifiedCreature.n.size() >= 4) { //Remove a node
             modifiedCreature.removeRandomNode();
         }
-        if (mainApp.random(0, 1) < mainApp.bigMutationChance*mutability && modifiedCreature.m.size() >= 2) { //Remove a muscle
+        if (mainApp.random(0, 1) < MainApp.bigMutationChance *mutability && modifiedCreature.m.size() >= 2) { //Remove a muscle
             modifiedCreature.removeRandomMuscle();
         }
         modifiedCreature.checkForOverlap();
@@ -105,7 +105,7 @@ class Creature {
         for (int i = 0; i < m.size(); i++) {
             Muscle mi = m.get(i);
             if(mi.axon >= n.size()){
-                mi.axon = mainApp.getNewMuscleAxon(n.size());
+                mi.axon = Muscle.getNewMuscleAxon(n.size());
             }
         }
 
@@ -168,7 +168,7 @@ class Creature {
         addRandomMuscle(nextClosestNode, n.size()-1);
     }
     void addRandomMuscle(int tc1, int tc2) {
-        int axon = mainApp.getNewMuscleAxon(n.size());
+        int axon = Muscle.getNewMuscleAxon(n.size());
         if (tc1 == -1) {
             tc1 = (int)(mainApp.random(0, n.size()));
             tc2 = tc1;
@@ -180,7 +180,7 @@ class Creature {
         if (tc1 != -1) {
             len = PApplet.dist(n.get(tc1).x, n.get(tc1).y, n.get(tc2).x, n.get(tc2).y);
         }
-        m.add(new Muscle(mainApp, axon, tc1, tc2, len, mainApp.random(0.02f, 0.08f)));
+        m.add(new Muscle(axon, tc1, tc2, len, mainApp.random(0.02f, 0.08f)));
     }
     void removeRandomNode() {
         int choice = PApplet.floor(mainApp.random(0, n.size()));

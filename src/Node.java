@@ -173,23 +173,23 @@ class Node {
         return (new Node(mainApp, x, y, 0, 0, m, f, value, operation, axon1, axon2));
     }
     Node modifyNode(float mutability, int nodeNum) {
-        float newX = x+ mainApp.r()*0.5f*mutability;
-        float newY = y+ mainApp.r()*0.5f*mutability;
-        float newM = m+ mainApp.r()*0.1f*mutability;
+        float newX = x+ MainApp.r()*0.5f*mutability;
+        float newY = y+ MainApp.r()*0.5f*mutability;
+        float newM = m+ MainApp.r()*0.1f*mutability;
         newM = PApplet.min(PApplet.max(newM, 0.3f), 0.5f);
         newM = 0.4f;
 
-        float newV = value*(1+ mainApp.r()*0.2f*mutability);
+        float newV = value*(1+ MainApp.r()*0.2f*mutability);
         int newOperation = operation;
         int newAxon1 = axon1;
         int newAxon2 = axon2;
-        if(mainApp.random(0,1)< mainApp.bigMutationChance*mutability){
+        if(mainApp.random(0,1)< MainApp.bigMutationChance *mutability){
             newOperation = (int) mainApp.random(0, mainApp.operationCount);
         }
-        if(mainApp.random(0,1)< mainApp.bigMutationChance*mutability){
+        if(mainApp.random(0,1)< MainApp.bigMutationChance *mutability){
             newAxon1 = (int)(mainApp.random(0,nodeNum));
         }
-        if(mainApp.random(0,1)< mainApp.bigMutationChance*mutability){
+        if(mainApp.random(0,1)< MainApp.bigMutationChance *mutability){
             newAxon2 = (int)(mainApp.random(0,nodeNum));
         }
 
@@ -201,7 +201,7 @@ class Node {
             newV = -newY*0.2f;
         }
 
-        Node newNode = new Node(mainApp, newX, newY, 0, 0, newM, PApplet.min(PApplet.max(f+ mainApp.r()*0.1f*mutability, 0), 1), newV, newOperation, newAxon1, newAxon2);
+        Node newNode = new Node(mainApp, newX, newY, 0, 0, newM, PApplet.min(PApplet.max(f+ MainApp.r()*0.1f*mutability, 0), 1), newV, newOperation, newAxon1, newAxon2);
         return newNode;//max(m+r()*0.1,0.2),min(max(f+r()*0.1,0),1)
     }
 }
