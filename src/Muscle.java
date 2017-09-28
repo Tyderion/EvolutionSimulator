@@ -3,12 +3,14 @@ import processing.core.PApplet;
 import java.util.ArrayList;
 
 class Muscle {
+    private Config config;
     static float force;
     int axon, c1, c2;
     float len;
     float rigidity;
     float previousTarget;
-    Muscle(int taxon, int tc1, int tc2, float tlen, float trigidity) {
+    Muscle(Config config, int taxon, int tc1, int tc2, float tlen, float trigidity) {
+        this.config = config;
         axon  = taxon;
         previousTarget = len = tlen;
         c1 = tc1;
@@ -26,7 +28,7 @@ class Muscle {
 
     void applyForce(int i, ArrayList<Node> n) {
         float target = previousTarget;
-        if(Config.energyDirection == 1 || Simulator.energy >= 0.0001){
+        if(config.getEnergyDirection() == 1 || Simulator.energy >= 0.0001){
             if(axon >= 0 && axon < n.size()){
                 target = len* Simulator.toMuscleUsable(n.get(axon).value);
             }else{
@@ -42,28 +44,28 @@ class Muscle {
         ni1.vy += PApplet.sin(angle)* force*rigidity/ni1.m;
         ni2.vx -= PApplet.cos(angle)* force*rigidity/ni2.m;
         ni2.vy -= PApplet.sin(angle)* force*rigidity/ni2.m;
-        Simulator.energy = PApplet.max(Simulator.energy + Config.energyDirection * PApplet.abs(previousTarget-target)*rigidity* Config.energyUnit,0);
+        Simulator.energy = PApplet.max(Simulator.energy + config.getEnergyDirection() * PApplet.abs(previousTarget-target)*rigidity* config.getEnergyUnit(),0);
         previousTarget = target;
     }
     Muscle copyMuscle() {
-        return new Muscle(axon, c1, c2, len, rigidity);
+        return new Muscle(config, axon, c1, c2, len, rigidity);
     }
     Muscle modifyMuscle(int nodeNum, float mutability) {
         int newc1 = c1;
         int newc2 = c2;
         int newAxon = axon;
-        if(Simulator.rand(0,1)< Config.bigMutationChance *mutability){
+        if(Simulator.rand(0,1)< config.getBigMutationChance() *mutability){
             newc1 = (int)(Simulator.rand(0,nodeNum));
         }
-        if(Simulator.rand(0,1)< Config.bigMutationChance *mutability){
+        if(Simulator.rand(0,1)< config.getBigMutationChance() *mutability){
             newc2 = (int)(Simulator.rand(0,nodeNum));
         }
-        if(Simulator.rand(0,1)< Config.bigMutationChance *mutability){
+        if(Simulator.rand(0,1)< config.getBigMutationChance() *mutability){
             newAxon = getNewMuscleAxon(nodeNum);
         }
         float newR = PApplet.min(PApplet.max(rigidity*(1+ Simulator.r()*0.9f*mutability),0.01f),0.08f);
         float newLen = PApplet.min(PApplet.max(len+ Simulator.r()*mutability,0.4f),1.25f);
 
-        return new Muscle(newAxon, newc1, newc2, newLen, newR);
+        return new Muscle(config, newAxon, newc1, newc2, newLen, newR);
     }
 }

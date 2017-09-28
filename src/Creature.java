@@ -4,6 +4,7 @@ import processing.core.PConstants;
 import java.util.ArrayList;
 
 class Creature {
+    private Config config;
     ArrayList<Node> n;
     ArrayList<Muscle> m;
     float d;
@@ -12,7 +13,8 @@ class Creature {
     float creatureTimer;
     float mutability;
 
-    Creature(int tid, ArrayList<Node> tn, ArrayList<Muscle> tm, float td, boolean talive, float tct, float tmut) {
+    Creature(Config config, int tid, ArrayList<Node> tn, ArrayList<Muscle> tm, float td, boolean talive, float tct, float tmut) {
+        this.config = config;
         id = tid;
         m = tm;
         n = tn;
@@ -23,7 +25,7 @@ class Creature {
     }
 
     Creature modified(int id) {
-        Creature modifiedCreature = new Creature(id,
+        Creature modifiedCreature = new Creature(config, id,
                 new ArrayList<Node>(0), new ArrayList<Muscle>(0), 0, true, creatureTimer + Simulator.r() * 16 * mutability, PApplet.min(mutability * Simulator.rand(0.8f, 1.25f), 2));
         for (int i = 0; i < n.size(); i++) {
             modifiedCreature.n.add(n.get(i).modifyNode(mutability, n.size()));
@@ -31,16 +33,16 @@ class Creature {
         for (int i = 0; i < m.size(); i++) {
             modifiedCreature.m.add(m.get(i).modifyMuscle(n.size(), mutability));
         }
-        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability || n.size() <= 2) { //Add a node
+        if (Simulator.rand(0, 1) < config.getBigMutationChance() * mutability || n.size() <= 2) { //Add a node
             modifiedCreature.addRandomNode();
         }
-        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability) { //Add a muscle
+        if (Simulator.rand(0, 1) < config.getBigMutationChance() * mutability) { //Add a muscle
             modifiedCreature.addRandomMuscle(-1, -1);
         }
-        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability && modifiedCreature.n.size() >= 4) { //Remove a node
+        if (Simulator.rand(0, 1) < config.getBigMutationChance() * mutability && modifiedCreature.n.size() >= 4) { //Remove a node
             modifiedCreature.removeRandomNode();
         }
-        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability && modifiedCreature.m.size() >= 2) { //Remove a muscle
+        if (Simulator.rand(0, 1) < config.getBigMutationChance() * mutability && modifiedCreature.m.size() >= 2) { //Remove a muscle
             modifiedCreature.removeRandomMuscle();
         }
         modifiedCreature.checkForOverlap();
@@ -111,7 +113,7 @@ class Creature {
 
         for (int i = 0; i < n.size(); i++) {
             Node ni = n.get(i);
-            ni.safeInput = (Config.operationAxons[ni.operation] == 0);
+            ni.safeInput = (config.getOperationAxons()[ni.operation] == 0);
         }
         int iterations = 0;
         boolean didSomething = false;
@@ -121,8 +123,8 @@ class Creature {
             for (int i = 0; i < n.size(); i++) {
                 Node ni = n.get(i);
                 if (!ni.safeInput) {
-                    if ((Config.operationAxons[ni.operation] == 1 && n.get(ni.axon1).safeInput) ||
-                            (Config.operationAxons[ni.operation] == 2 && n.get(ni.axon1).safeInput && n.get(ni.axon2).safeInput)) {
+                    if ((config.getOperationAxons()[ni.operation] == 1 && n.get(ni.axon1).safeInput) ||
+                            (config.getOperationAxons()[ni.operation] == 2 && n.get(ni.axon1).safeInput && n.get(ni.axon2).safeInput)) {
                         ni.safeInput = true;
                         didSomething = true;
                     }
@@ -151,7 +153,7 @@ class Creature {
 
         int newNodeCount = n.size() + 1;
 
-        n.add(new Node(x, y, 0, 0, 0.4f, Simulator.rand(0, 1), Simulator.rand(0, 1), PApplet.floor(Simulator.rand(0, Config.operationCount)),
+        n.add(new Node(config, x, y, 0, 0, 0.4f, Simulator.rand(0, 1), Simulator.rand(0, 1), PApplet.floor(Simulator.rand(0, config.getOperationCount())),
                 PApplet.floor(Simulator.rand(0, newNodeCount)), PApplet.floor(Simulator.rand(0, newNodeCount)))); //rand(0.1,1),rand(0,1)
         int nextClosestNode = 0;
         float record = 100000;
@@ -182,7 +184,7 @@ class Creature {
         if (tc1 != -1) {
             len = PApplet.dist(n.get(tc1).x, n.get(tc1).y, n.get(tc2).x, n.get(tc2).y);
         }
-        m.add(new Muscle(axon, tc1, tc2, len, Simulator.rand(0.02f, 0.08f)));
+        m.add(new Muscle(config, axon, tc1, tc2, len, Simulator.rand(0.02f, 0.08f)));
     }
 
     void removeRandomNode() {
@@ -223,6 +225,6 @@ class Creature {
         if (newID == -1) {
             newID = id;
         }
-        return new Creature(newID, n2, m2, d, alive, creatureTimer, mutability);
+        return new Creature(config, newID, n2, m2, d, alive, creatureTimer, mutability);
     }
 }

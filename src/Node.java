@@ -4,12 +4,14 @@ import processing.core.PConstants;
 import java.util.ArrayList;
 
 class Node {
+    private Config config;
     float x, y, vx, vy, prevX, prevY, pvx, pvy, m, f, value, valueToBe;
     int operation, axon1, axon2;
     boolean safeInput;
     float pressure;
 
-    Node(float tx, float ty, float tvx, float tvy, float tm, float tf, float val, int op, int a1, int a2) {
+    Node(Config config, float tx, float ty, float tvx, float tvy, float tm, float tf, float val, int op, int a1, int a2) {
+        this.config = config;
         prevX = x = tx;
         prevY = y = ty;
         pvx = vx = tvx;
@@ -24,34 +26,34 @@ class Node {
     }
 
     void applyForces() {
-        vx *= Config.airFriction;
-        vy *= Config.airFriction;
+        vx *= config.getAirFriction();
+        vy *= config.getAirFriction();
         y += vy;
         x += vx;
         float acc = PApplet.dist(vx, vy, pvx, pvy);
-        Simulator.totalNodeNausea += acc * acc * Config.nauseaUnit;
+        Simulator.totalNodeNausea += acc * acc * config.getNauseaUnit();
         pvx = vx;
         pvy = vy;
 
     }
 
     void applyGravity() {
-        vy += Config.gravity;
+        vy += config.getGravity();
     }
 
     void pressAgainstGround(float groundY) {
         float dif = y - (groundY - m / 2);
-        pressure += dif * Config.pressureUnit;
+        pressure += dif * config.getPressureUnit();
         y = (groundY - m / 2);
         vy = 0;
         x -= vx * f;
         if (vx > 0) {
-            vx -= f * dif * Config.FRICTION;
+            vx -= f * dif * config.getFRICTION();
             if (vx < 0) {
                 vx = 0;
             }
         } else {
-            vx += f * dif * Config.FRICTION;
+            vx += f * dif * config.getFRICTION();
             if (vx > 0) {
                 vx = 0;
             }
@@ -61,16 +63,16 @@ class Node {
     void hitWalls() {
         pressure = 0;
         float dif = y + m / 2;
-        if (dif >= 0 && Config.haveGround) {
+        if (dif >= 0 && config.hasGround()) {
             pressAgainstGround(0);
         }
-        if (y > prevY && Config.hazelStairs >= 0) {
+        if (y > prevY && config.getHazelStairs() >= 0) {
             float bottomPointNow = y + m / 2;
             float bottomPointPrev = prevY + m / 2;
-            int levelNow = (int) (PApplet.ceil(bottomPointNow / Config.hazelStairs));
-            int levelPrev = (int) (PApplet.ceil(bottomPointPrev / Config.hazelStairs));
+            int levelNow = (int) (PApplet.ceil(bottomPointNow / config.getHazelStairs()));
+            int levelPrev = (int) (PApplet.ceil(bottomPointPrev / config.getHazelStairs()));
             if (levelNow > levelPrev) {
-                float groundLevel = levelPrev * Config.hazelStairs;
+                float groundLevel = levelPrev * config.getHazelStairs();
                 pressAgainstGround(groundLevel);
             }
         }
@@ -122,7 +124,7 @@ class Node {
                 }
                 if (distance < rad || flip) {
                     dif = rad - distance;
-                    pressure += dif * Config.pressureUnit;
+                    pressure += dif * config.getPressureUnit();
                     float multi = rad / distance;
                     if (flip) {
                         multi = -multi;
@@ -132,7 +134,7 @@ class Node {
                     float veloAngle = PApplet.atan2(vy, vx);
                     float veloMag = PApplet.dist(0, 0, vx, vy);
                     float relAngle = veloAngle - wallAngle;
-                    float relY = PApplet.sin(relAngle) * veloMag * dif * Config.FRICTION;
+                    float relY = PApplet.sin(relAngle) * veloMag * dif * config.getFRICTION();
                     vx = -PApplet.sin(relAngle) * relY;
                     vy = PApplet.cos(relAngle) * relY;
                 }
@@ -176,7 +178,7 @@ class Node {
     }
 
     Node copyNode() {
-        return (new Node(x, y, 0, 0, m, f, value, operation, axon1, axon2));
+        return (new Node(config, x, y, 0, 0, m, f, value, operation, axon1, axon2));
     }
 
     Node modifyNode(float mutability, int nodeNum) {
@@ -190,13 +192,13 @@ class Node {
         int newOperation = operation;
         int newAxon1 = axon1;
         int newAxon2 = axon2;
-        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability) {
-            newOperation = (int) Simulator.rand(0, Config.operationCount);
+        if (Simulator.rand(0, 1) < config.getBigMutationChance() * mutability) {
+            newOperation = (int) Simulator.rand(0, config.getOperationCount());
         }
-        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability) {
+        if (Simulator.rand(0, 1) < config.getBigMutationChance() * mutability) {
             newAxon1 = (int) (Simulator.rand(0, nodeNum));
         }
-        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability) {
+        if (Simulator.rand(0, 1) < config.getBigMutationChance() * mutability) {
             newAxon2 = (int) (Simulator.rand(0, nodeNum));
         }
 
@@ -208,7 +210,7 @@ class Node {
             newV = -newY * 0.2f;
         }
 
-        Node newNode = new Node(newX, newY, 0, 0, newM, PApplet.min(PApplet.max(f + Simulator.r() * 0.1f * mutability, 0), 1), newV, newOperation, newAxon1, newAxon2);
+        Node newNode = new Node(config, newX, newY, 0, 0, newM, PApplet.min(PApplet.max(f + Simulator.r() * 0.1f * mutability, 0), 1), newV, newOperation, newAxon1, newAxon2);
         return newNode;//max(m+r()*0.1,0.2),min(max(f+r()*0.1,0),1)
     }
 }
