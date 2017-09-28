@@ -20,7 +20,7 @@ public class Simulator extends PApplet {
     ArrayList<Integer[]> speciesCounts = new ArrayList<Integer[]>(0);
     ArrayList<Integer> topSpeciesCounts = new ArrayList<Integer>(0);
     ArrayList<Creature> creatureDatabase = new ArrayList<Creature>(0);
-    ArrayList<Rectangle> rects = new ArrayList<Rectangle>(0);
+    static ArrayList<Rectangle> rects = new ArrayList<Rectangle>(0);
     PGraphics graphImage;
     PGraphics screenImage;
     PGraphics popUpImage;
@@ -28,7 +28,7 @@ public class Simulator extends PApplet {
     static final boolean haveGround = true;
     int histBarsPerMeter = 5;
     String[] operationNames = {"#", "time", "px", "py", "+", "-", "*", "÷", "%", "sin", "sig", "pres"};
-    int[] operationAxons = {0, 0, 0, 0, 2, 2, 2, 2, 2, 1, 1, 0};
+    static final int[] operationAxons = {0, 0, 0, 0, 2, 2, 2, 2, 2, 1, 1, 0};
     static final int operationCount = 12;
     String fitnessUnit = "m";
     String fitnessName = "Distance";
@@ -75,7 +75,7 @@ public class Simulator extends PApplet {
     int overallTimer = 0;
     boolean miniSimulation = false;
     int creatureWatching = 0;
-    int simulationTimer = 0;
+    static int simulationTimer = 0;
     int[] creaturesInPosition = new int[1000];
     float camZoom = 0.015f;
     static final float gravity = 0.005f;
@@ -1154,7 +1154,7 @@ public class Simulator extends PApplet {
                     int nodeNum = (int) (random(3, 6));
                     int muscleNum = (int) (random(nodeNum - 1, nodeNum * 3 - 6));
                     for (int i = 0; i < nodeNum; i++) {
-                        n.add(new Node(this, random(-1, 1), random(-1, 1), 0, 0, 0.4f, random(0, 1), random(0, 1),
+                        n.add(new Node(random(-1, 1), random(-1, 1), 0, 0, 0.4f, random(0, 1), random(0, 1),
                                 floor(random(0, operationCount)), floor(random(0, nodeNum)), floor(random(0, nodeNum)))); //replaced all nodes' sizes with 0.4, used to be random(0.1,1), random(0,1)
                     }
                     for (int i = 0; i < muscleNum; i++) {
@@ -1181,7 +1181,7 @@ public class Simulator extends PApplet {
                     toStableConfiguration(nodeNum, muscleNum);
                     adjustToCenter(nodeNum);
                     float heartbeat = random(40, 80);
-                    c[y * 40 + x] = new Creature(this, y * 40 + x + 1, new ArrayList<Node>(n), new ArrayList<Muscle>(m), 0, true, heartbeat, 1.0f);
+                    c[y * 40 + x] = new Creature(y * 40 + x + 1, new ArrayList<Node>(n), new ArrayList<Muscle>(m), 0, true, heartbeat, 1.0f);
                     drawCreature(c[y * 40 + x], x * 3 + 5.5f, y * 2.5f + 3, 0);
                     c[y * 40 + x].checkForOverlap();
                     c[y * 40 + x].checkForLoneNodes();

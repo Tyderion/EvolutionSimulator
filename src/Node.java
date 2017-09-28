@@ -4,13 +4,11 @@ import processing.core.PConstants;
 import java.util.ArrayList;
 
 class Node {
-    private Simulator simulator;
     float x, y, vx, vy, prevX, prevY, pvx, pvy, m, f, value, valueToBe;
     int operation, axon1, axon2;
     boolean safeInput;
     float pressure;
-    Node(Simulator simulator, float tx, float ty, float tvx, float tvy, float tm, float tf, float val, int op, int a1, int a2) {
-        this.simulator = simulator;
+    Node(float tx, float ty, float tvx, float tvy, float tm, float tf, float val, int op, int a1, int a2) {
         prevX = x = tx;
         prevY = y = ty;
         pvx = vx = tvx;
@@ -71,8 +69,8 @@ class Node {
                 pressAgainstGround(groundLevel);
             }
         }
-        for (int i = 0; i < simulator.rects.size(); i++) {
-            Rectangle r = simulator.rects.get(i);
+        for (int i = 0; i < Simulator.rects.size(); i++) {
+            Rectangle r = Simulator.rects.get(i);
             boolean flip = false;
             float px, py;
             if (PApplet.abs(x-(r.x1+r.x2)/2) <= (r.x2-r.x1+m)/2 && PApplet.abs(y-(r.y1+r.y2)/2) <= (r.y2-r.y1+m)/2) {
@@ -143,7 +141,7 @@ class Node {
         float axonValue2 = n.get(axon2).value;
         if(operation == 0){ // constant
         }else if(operation == 1){ // time
-            valueToBe = simulator.simulationTimer/60.0f;
+            valueToBe = Simulator.simulationTimer /60.0f;
         }else if(operation == 2){ // x - coordinate
             valueToBe = x*0.2f;
         }else if(operation == 3){ // y - coordinate
@@ -170,7 +168,7 @@ class Node {
         value = valueToBe;
     }
     Node copyNode() {
-        return (new Node(simulator, x, y, 0, 0, m, f, value, operation, axon1, axon2));
+        return (new Node(x, y, 0, 0, m, f, value, operation, axon1, axon2));
     }
     Node modifyNode(float mutability, int nodeNum) {
         float newX = x+ Simulator.r()*0.5f*mutability;
@@ -201,7 +199,7 @@ class Node {
             newV = -newY*0.2f;
         }
 
-        Node newNode = new Node(simulator, newX, newY, 0, 0, newM, PApplet.min(PApplet.max(f+ Simulator.r()*0.1f*mutability, 0), 1), newV, newOperation, newAxon1, newAxon2);
+        Node newNode = new Node(newX, newY, 0, 0, newM, PApplet.min(PApplet.max(f+ Simulator.r()*0.1f*mutability, 0), 1), newV, newOperation, newAxon1, newAxon2);
         return newNode;//max(m+r()*0.1,0.2),min(max(f+r()*0.1,0),1)
     }
 }
