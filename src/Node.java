@@ -48,12 +48,12 @@ class Node {
         vy = 0;
         x -= vx * f;
         if (vx > 0) {
-            vx -= f * dif * config.getFRICTION();
+            vx -= f * dif * config.getFriction();
             if (vx < 0) {
                 vx = 0;
             }
         } else {
-            vx += f * dif * config.getFRICTION();
+            vx += f * dif * config.getFriction();
             if (vx > 0) {
                 vx = 0;
             }
@@ -134,7 +134,7 @@ class Node {
                     float veloAngle = PApplet.atan2(vy, vx);
                     float veloMag = PApplet.dist(0, 0, vx, vy);
                     float relAngle = veloAngle - wallAngle;
-                    float relY = PApplet.sin(relAngle) * veloMag * dif * config.getFRICTION();
+                    float relY = PApplet.sin(relAngle) * veloMag * dif * config.getFriction();
                     vx = -PApplet.sin(relAngle) * relY;
                     vy = PApplet.cos(relAngle) * relY;
                 }
