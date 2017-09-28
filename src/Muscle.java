@@ -26,7 +26,7 @@ class Muscle {
 
     void applyForce(int i, ArrayList<Node> n) {
         float target = previousTarget;
-        if(Simulator.energyDirection == 1 || Simulator.energy >= 0.0001){
+        if(Config.energyDirection == 1 || Simulator.energy >= 0.0001){
             if(axon >= 0 && axon < n.size()){
                 target = len* Simulator.toMuscleUsable(n.get(axon).value);
             }else{
@@ -42,7 +42,7 @@ class Muscle {
         ni1.vy += PApplet.sin(angle)* force*rigidity/ni1.m;
         ni2.vx -= PApplet.cos(angle)* force*rigidity/ni2.m;
         ni2.vy -= PApplet.sin(angle)* force*rigidity/ni2.m;
-        Simulator.energy = PApplet.max(Simulator.energy + Simulator.energyDirection * PApplet.abs(previousTarget-target)*rigidity* Simulator.energyUnit,0);
+        Simulator.energy = PApplet.max(Simulator.energy + Config.energyDirection * PApplet.abs(previousTarget-target)*rigidity* Config.energyUnit,0);
         previousTarget = target;
     }
     Muscle copyMuscle() {
@@ -52,13 +52,13 @@ class Muscle {
         int newc1 = c1;
         int newc2 = c2;
         int newAxon = axon;
-        if(Simulator.rand(0,1)< Simulator.bigMutationChance *mutability){
+        if(Simulator.rand(0,1)< Config.bigMutationChance *mutability){
             newc1 = (int)(Simulator.rand(0,nodeNum));
         }
-        if(Simulator.rand(0,1)< Simulator.bigMutationChance *mutability){
+        if(Simulator.rand(0,1)< Config.bigMutationChance *mutability){
             newc2 = (int)(Simulator.rand(0,nodeNum));
         }
-        if(Simulator.rand(0,1)< Simulator.bigMutationChance *mutability){
+        if(Simulator.rand(0,1)< Config.bigMutationChance *mutability){
             newAxon = getNewMuscleAxon(nodeNum);
         }
         float newR = PApplet.min(PApplet.max(rigidity*(1+ Simulator.r()*0.9f*mutability),0.01f),0.08f);

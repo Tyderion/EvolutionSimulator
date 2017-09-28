@@ -6,18 +6,6 @@ import processing.event.MouseEvent;
 import java.util.ArrayList;
 
 public class Simulator extends PApplet {
-    static final int energyDirection = 1; // if 1, it'll count up how much energy is used.  if -1, it'll count down from the baseline energy, and when energy hits 0, the creature dies.
-    static final float bigMutationChance = 0.06f;
-    static final float FRICTION = 4;
-    static final boolean haveGround = true;
-    static final int[] operationAxons = {0, 0, 0, 0, 2, 2, 2, 2, 2, 1, 1, 0};
-    static final int operationCount = 12;
-    static final float hazelStairs = -1;
-    static final float pressureUnit = 500.0f / 2.37f;
-    static final float energyUnit = 20;
-    static final float nauseaUnit = 5;
-    static final float gravity = 0.005f;
-    static final float airFriction = 0.95f;
     static Simulator self;
     static ArrayList<Rectangle> rects = new ArrayList<Rectangle>(0);
     static float energy = 0;
@@ -125,28 +113,28 @@ public class Simulator extends PApplet {
     }
 
     void drawGround(int toImage) {
-        int stairDrawStart = max(1, (int) (-averageY / hazelStairs) - 10);
+        int stairDrawStart = max(1, (int) (-averageY / Config.hazelStairs) - 10);
         if (toImage == 0) {
             noStroke();
             fill(0, 130, 0);
-            if (haveGround)
+            if (Config.haveGround)
                 rect((camX - camZoom * 800.0f) * scaleToFixBug, 0 * scaleToFixBug, (camZoom * 1600.0f) * scaleToFixBug, (camZoom * 900.0f) * scaleToFixBug);
             for (int i = 0; i < rects.size(); i++) {
                 Rectangle r = rects.get(i);
                 rect(r.x1 * scaleToFixBug, r.y1 * scaleToFixBug, (r.x2 - r.x1) * scaleToFixBug, (r.y2 - r.y1) * scaleToFixBug);
             }
-            if (hazelStairs > 0) {
+            if (Config.hazelStairs > 0) {
                 for (int i = stairDrawStart; i < stairDrawStart + 20; i++) {
                     fill(255, 255, 255, 128);
-                    rect((averageX - 20) * scaleToFixBug, -hazelStairs * i * scaleToFixBug, 40 * scaleToFixBug, hazelStairs * 0.3f * scaleToFixBug);
+                    rect((averageX - 20) * scaleToFixBug, -Config.hazelStairs * i * scaleToFixBug, 40 * scaleToFixBug, Config.hazelStairs * 0.3f * scaleToFixBug);
                     fill(255, 255, 255, 255);
-                    rect((averageX - 20) * scaleToFixBug, -hazelStairs * i * scaleToFixBug, 40 * scaleToFixBug, hazelStairs * 0.15f * scaleToFixBug);
+                    rect((averageX - 20) * scaleToFixBug, -Config.hazelStairs * i * scaleToFixBug, 40 * scaleToFixBug, Config.hazelStairs * 0.15f * scaleToFixBug);
                 }
             }
         } else if (toImage == 2) {
             popUpImage.noStroke();
             popUpImage.fill(0, 130, 0);
-            if (haveGround)
+            if (Config.haveGround)
                 popUpImage.rect((camX - camZoom * 300.0f) * scaleToFixBug, 0 * scaleToFixBug, (camZoom * 600.0f) * scaleToFixBug, (camZoom * 600.0f) * scaleToFixBug);
             float ww = 450;
             float wh = 450;
@@ -154,12 +142,12 @@ public class Simulator extends PApplet {
                 Rectangle r = rects.get(i);
                 popUpImage.rect(r.x1 * scaleToFixBug, r.y1 * scaleToFixBug, (r.x2 - r.x1) * scaleToFixBug, (r.y2 - r.y1) * scaleToFixBug);
             }
-            if (hazelStairs > 0) {
+            if (Config.hazelStairs > 0) {
                 for (int i = stairDrawStart; i < stairDrawStart + 20; i++) {
                     popUpImage.fill(255, 255, 255, 128);
-                    popUpImage.rect((averageX - 20) * scaleToFixBug, -hazelStairs * i * scaleToFixBug, 40 * scaleToFixBug, hazelStairs * 0.3f * scaleToFixBug);
+                    popUpImage.rect((averageX - 20) * scaleToFixBug, -Config.hazelStairs * i * scaleToFixBug, 40 * scaleToFixBug, Config.hazelStairs * 0.3f * scaleToFixBug);
                     popUpImage.fill(255, 255, 255, 255);
-                    popUpImage.rect((averageX - 20) * scaleToFixBug, -hazelStairs * i * scaleToFixBug, 40 * scaleToFixBug, hazelStairs * 0.15f * scaleToFixBug);
+                    popUpImage.rect((averageX - 20) * scaleToFixBug, -Config.hazelStairs * i * scaleToFixBug, 40 * scaleToFixBug, Config.hazelStairs * 0.15f * scaleToFixBug);
                 }
             }
         }
@@ -214,7 +202,7 @@ public class Simulator extends PApplet {
 
     void drawNodeAxons(ArrayList<Node> n, int i, float x, float y, int toImage) {
         Node ni = n.get(i);
-        if (operationAxons[ni.operation] >= 1) {
+        if (Config.operationAxons[ni.operation] >= 1) {
             Node axonSource = n.get(n.get(i).axon1);
             float point1x = ni.x - ni.m * 0.3f + x;
             float point1y = ni.y - ni.m * 0.3f + y;
@@ -222,7 +210,7 @@ public class Simulator extends PApplet {
             float point2y = axonSource.y + axonSource.m * 0.5f + y;
             drawSingleAxon(point1x, point1y, point2x, point2y, toImage);
         }
-        if (operationAxons[ni.operation] == 2) {
+        if (Config.operationAxons[ni.operation] == 2) {
             Node axonSource = n.get(n.get(i).axon2);
             float point1x = ni.x + ni.m * 0.3f + x;
             float point1y = ni.y - ni.m * 0.3f + y;
@@ -1153,7 +1141,7 @@ public class Simulator extends PApplet {
                     int muscleNum = (int) (random(nodeNum - 1, nodeNum * 3 - 6));
                     for (int i = 0; i < nodeNum; i++) {
                         n.add(new Node(random(-1, 1), random(-1, 1), 0, 0, 0.4f, random(0, 1), random(0, 1),
-                                floor(random(0, operationCount)), floor(random(0, nodeNum)), floor(random(0, nodeNum)))); //replaced all nodes' sizes with 0.4, used to be random(0.1,1), random(0,1)
+                                floor(random(0, Config.operationCount)), floor(random(0, nodeNum)), floor(random(0, nodeNum)))); //replaced all nodes' sizes with 0.4, used to be random(0.1,1), random(0,1)
                     }
                     for (int i = 0; i < muscleNum; i++) {
                         int tc1 = 0;
@@ -1526,7 +1514,7 @@ public class Simulator extends PApplet {
         text("Time: " + nf(timeShow, 0, 2) + " / 15 sec.", 0, 64);
         text("Playback Speed: x" + max(1, speed), 0, 96);
         String extraWord = "used";
-        if (energyDirection == -1) {
+        if (Config.energyDirection == -1) {
             extraWord = "left";
         }
         text("X: " + nf(averageX / 5.0f, 0, 2) + "", 0, 128);

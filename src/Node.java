@@ -24,34 +24,34 @@ class Node {
     }
 
     void applyForces() {
-        vx *= Simulator.airFriction;
-        vy *= Simulator.airFriction;
+        vx *= Config.airFriction;
+        vy *= Config.airFriction;
         y += vy;
         x += vx;
         float acc = PApplet.dist(vx, vy, pvx, pvy);
-        Simulator.totalNodeNausea += acc * acc * Simulator.nauseaUnit;
+        Simulator.totalNodeNausea += acc * acc * Config.nauseaUnit;
         pvx = vx;
         pvy = vy;
 
     }
 
     void applyGravity() {
-        vy += Simulator.gravity;
+        vy += Config.gravity;
     }
 
     void pressAgainstGround(float groundY) {
         float dif = y - (groundY - m / 2);
-        pressure += dif * Simulator.pressureUnit;
+        pressure += dif * Config.pressureUnit;
         y = (groundY - m / 2);
         vy = 0;
         x -= vx * f;
         if (vx > 0) {
-            vx -= f * dif * Simulator.FRICTION;
+            vx -= f * dif * Config.FRICTION;
             if (vx < 0) {
                 vx = 0;
             }
         } else {
-            vx += f * dif * Simulator.FRICTION;
+            vx += f * dif * Config.FRICTION;
             if (vx > 0) {
                 vx = 0;
             }
@@ -61,16 +61,16 @@ class Node {
     void hitWalls() {
         pressure = 0;
         float dif = y + m / 2;
-        if (dif >= 0 && Simulator.haveGround) {
+        if (dif >= 0 && Config.haveGround) {
             pressAgainstGround(0);
         }
-        if (y > prevY && Simulator.hazelStairs >= 0) {
+        if (y > prevY && Config.hazelStairs >= 0) {
             float bottomPointNow = y + m / 2;
             float bottomPointPrev = prevY + m / 2;
-            int levelNow = (int) (PApplet.ceil(bottomPointNow / Simulator.hazelStairs));
-            int levelPrev = (int) (PApplet.ceil(bottomPointPrev / Simulator.hazelStairs));
+            int levelNow = (int) (PApplet.ceil(bottomPointNow / Config.hazelStairs));
+            int levelPrev = (int) (PApplet.ceil(bottomPointPrev / Config.hazelStairs));
             if (levelNow > levelPrev) {
-                float groundLevel = levelPrev * Simulator.hazelStairs;
+                float groundLevel = levelPrev * Config.hazelStairs;
                 pressAgainstGround(groundLevel);
             }
         }
@@ -122,7 +122,7 @@ class Node {
                 }
                 if (distance < rad || flip) {
                     dif = rad - distance;
-                    pressure += dif * Simulator.pressureUnit;
+                    pressure += dif * Config.pressureUnit;
                     float multi = rad / distance;
                     if (flip) {
                         multi = -multi;
@@ -132,7 +132,7 @@ class Node {
                     float veloAngle = PApplet.atan2(vy, vx);
                     float veloMag = PApplet.dist(0, 0, vx, vy);
                     float relAngle = veloAngle - wallAngle;
-                    float relY = PApplet.sin(relAngle) * veloMag * dif * Simulator.FRICTION;
+                    float relY = PApplet.sin(relAngle) * veloMag * dif * Config.FRICTION;
                     vx = -PApplet.sin(relAngle) * relY;
                     vy = PApplet.cos(relAngle) * relY;
                 }
@@ -190,13 +190,13 @@ class Node {
         int newOperation = operation;
         int newAxon1 = axon1;
         int newAxon2 = axon2;
-        if (Simulator.rand(0, 1) < Simulator.bigMutationChance * mutability) {
-            newOperation = (int) Simulator.rand(0, Simulator.operationCount);
+        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability) {
+            newOperation = (int) Simulator.rand(0, Config.operationCount);
         }
-        if (Simulator.rand(0, 1) < Simulator.bigMutationChance * mutability) {
+        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability) {
             newAxon1 = (int) (Simulator.rand(0, nodeNum));
         }
-        if (Simulator.rand(0, 1) < Simulator.bigMutationChance * mutability) {
+        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability) {
             newAxon2 = (int) (Simulator.rand(0, nodeNum));
         }
 

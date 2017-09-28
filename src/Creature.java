@@ -31,16 +31,16 @@ class Creature {
         for (int i = 0; i < m.size(); i++) {
             modifiedCreature.m.add(m.get(i).modifyMuscle(n.size(), mutability));
         }
-        if (Simulator.rand(0, 1) < Simulator.bigMutationChance * mutability || n.size() <= 2) { //Add a node
+        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability || n.size() <= 2) { //Add a node
             modifiedCreature.addRandomNode();
         }
-        if (Simulator.rand(0, 1) < Simulator.bigMutationChance * mutability) { //Add a muscle
+        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability) { //Add a muscle
             modifiedCreature.addRandomMuscle(-1, -1);
         }
-        if (Simulator.rand(0, 1) < Simulator.bigMutationChance * mutability && modifiedCreature.n.size() >= 4) { //Remove a node
+        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability && modifiedCreature.n.size() >= 4) { //Remove a node
             modifiedCreature.removeRandomNode();
         }
-        if (Simulator.rand(0, 1) < Simulator.bigMutationChance * mutability && modifiedCreature.m.size() >= 2) { //Remove a muscle
+        if (Simulator.rand(0, 1) < Config.bigMutationChance * mutability && modifiedCreature.m.size() >= 2) { //Remove a muscle
             modifiedCreature.removeRandomMuscle();
         }
         modifiedCreature.checkForOverlap();
@@ -111,7 +111,7 @@ class Creature {
 
         for (int i = 0; i < n.size(); i++) {
             Node ni = n.get(i);
-            ni.safeInput = (Simulator.operationAxons[ni.operation] == 0);
+            ni.safeInput = (Config.operationAxons[ni.operation] == 0);
         }
         int iterations = 0;
         boolean didSomething = false;
@@ -121,8 +121,8 @@ class Creature {
             for (int i = 0; i < n.size(); i++) {
                 Node ni = n.get(i);
                 if (!ni.safeInput) {
-                    if ((Simulator.operationAxons[ni.operation] == 1 && n.get(ni.axon1).safeInput) ||
-                            (Simulator.operationAxons[ni.operation] == 2 && n.get(ni.axon1).safeInput && n.get(ni.axon2).safeInput)) {
+                    if ((Config.operationAxons[ni.operation] == 1 && n.get(ni.axon1).safeInput) ||
+                            (Config.operationAxons[ni.operation] == 2 && n.get(ni.axon1).safeInput && n.get(ni.axon2).safeInput)) {
                         ni.safeInput = true;
                         didSomething = true;
                     }
@@ -151,7 +151,7 @@ class Creature {
 
         int newNodeCount = n.size() + 1;
 
-        n.add(new Node(x, y, 0, 0, 0.4f, Simulator.rand(0, 1), Simulator.rand(0, 1), PApplet.floor(Simulator.rand(0, Simulator.operationCount)),
+        n.add(new Node(x, y, 0, 0, 0.4f, Simulator.rand(0, 1), Simulator.rand(0, 1), PApplet.floor(Simulator.rand(0, Config.operationCount)),
                 PApplet.floor(Simulator.rand(0, newNodeCount)), PApplet.floor(Simulator.rand(0, newNodeCount)))); //rand(0.1,1),rand(0,1)
         int nextClosestNode = 0;
         float record = 100000;
