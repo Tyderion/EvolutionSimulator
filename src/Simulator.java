@@ -8,37 +8,40 @@ import java.util.ArrayList;
 public class Simulator extends PApplet {
     static final int energyDirection = 1; // if 1, it'll count up how much energy is used.  if -1, it'll count down from the baseline energy, and when energy hits 0, the creature dies.
     static final float bigMutationChance = 0.06f;
-
+    static final float FRICTION = 4;
+    static final boolean haveGround = true;
+    static final int[] operationAxons = {0, 0, 0, 0, 2, 2, 2, 2, 2, 1, 1, 0};
+    static final int operationCount = 12;
+    static final float hazelStairs = -1;
+    static final float pressureUnit = 500.0f / 2.37f;
+    static final float energyUnit = 20;
+    static final float nauseaUnit = 5;
+    static final float gravity = 0.005f;
+    static final float airFriction = 0.95f;
     static Simulator self;
-
+    static ArrayList<Rectangle> rects = new ArrayList<Rectangle>(0);
+    static float energy = 0;
+    static float totalNodeNausea = 0;
+    static int simulationTimer = 0;
     final float windowSizeMultiplier = 0.8f;
     final int SEED = 0;
-    static final float FRICTION = 4;
     PFont font;
     ArrayList<Float[]> percentile = new ArrayList<Float[]>(0);
     ArrayList<Integer[]> barCounts = new ArrayList<Integer[]>(0);
     ArrayList<Integer[]> speciesCounts = new ArrayList<Integer[]>(0);
     ArrayList<Integer> topSpeciesCounts = new ArrayList<Integer>(0);
     ArrayList<Creature> creatureDatabase = new ArrayList<Creature>(0);
-    static ArrayList<Rectangle> rects = new ArrayList<Rectangle>(0);
     PGraphics graphImage;
     PGraphics screenImage;
     PGraphics popUpImage;
     PGraphics segBarImage;
-    static final boolean haveGround = true;
     int histBarsPerMeter = 5;
     String[] operationNames = {"#", "time", "px", "py", "+", "-", "*", "÷", "%", "sin", "sig", "pres"};
-    static final int[] operationAxons = {0, 0, 0, 0, 2, 2, 2, 2, 2, 1, 1, 0};
-    static final int operationCount = 12;
     String fitnessUnit = "m";
     String fitnessName = "Distance";
     float baselineEnergy = 0.0f;
-    static final float hazelStairs = -1;
     boolean saveFramesPerGeneration = true;
     int lastImageSaved = -1;
-    static final float pressureUnit = 500.0f / 2.37f;
-    static final float energyUnit = 20;
-    static final float nauseaUnit = 5;
     int minBar = -10;
     int maxBar = 100;
     int barLen = maxBar - minBar;
@@ -46,9 +49,7 @@ public class Simulator extends PApplet {
     float cTimer = 60;
     float postFontSize = 0.96f;
     float scaleToFixBug = 1000;
-    static float energy = 0;
     float averageNodeNausea = 0;
-    static float totalNodeNausea = 0;
     float lineY1 = -0.08f; // These are for the lines of text on each node.
     float lineY2 = 0.35f;
     int axonColor = color(255, 255, 0);
@@ -75,11 +76,8 @@ public class Simulator extends PApplet {
     int overallTimer = 0;
     boolean miniSimulation = false;
     int creatureWatching = 0;
-    static int simulationTimer = 0;
     int[] creaturesInPosition = new int[1000];
     float camZoom = 0.015f;
-    static final float gravity = 0.005f;
-    static final float airFriction = 0.95f;
     float target;
     float averageX;
     float averageY;
@@ -98,12 +96,12 @@ public class Simulator extends PApplet {
     Creature[] c = new Creature[1000];
     ArrayList<Creature> c2 = new ArrayList<Creature>();
 
-    public static void main(String[] args) {
-        PApplet.main("Simulator", args);
-    }
-
     public Simulator() {
         self = this;
+    }
+
+    public static void main(String[] args) {
+        PApplet.main("Simulator", args);
     }
 
     static float rand(float l, float h) {
@@ -114,12 +112,12 @@ public class Simulator extends PApplet {
         return min(max(f, 0.5f), 1.5f);
     }
 
-    float inter(int a, int b, float offset) {
-        return ((float) a) + ((float) b - (float) a) * offset;
-    }
-
     static float r() {
         return pow(rand(-1, 1), 19);
+    }
+
+    float inter(int a, int b, float offset) {
+        return ((float) a) + ((float) b - (float) a) * offset;
     }
 
     int rInt() {
