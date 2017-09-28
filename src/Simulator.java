@@ -5,15 +5,15 @@ import processing.event.MouseEvent;
 
 import java.util.ArrayList;
 
-public class MainApp extends PApplet {
+public class Simulator extends PApplet {
     static final int energyDirection = 1; // if 1, it'll count up how much energy is used.  if -1, it'll count down from the baseline energy, and when energy hits 0, the creature dies.
     static final float bigMutationChance = 0.06f;
 
-    static MainApp self;
+    static Simulator self;
 
     final float windowSizeMultiplier = 0.8f;
     final int SEED = 0;
-    final float FRICTION = 4;
+    static final float FRICTION = 4;
     PFont font;
     ArrayList<Float[]> percentile = new ArrayList<Float[]>(0);
     ArrayList<Integer[]> barCounts = new ArrayList<Integer[]>(0);
@@ -25,20 +25,20 @@ public class MainApp extends PApplet {
     PGraphics screenImage;
     PGraphics popUpImage;
     PGraphics segBarImage;
-    boolean haveGround = true;
+    static final boolean haveGround = true;
     int histBarsPerMeter = 5;
     String[] operationNames = {"#", "time", "px", "py", "+", "-", "*", "÷", "%", "sin", "sig", "pres"};
     int[] operationAxons = {0, 0, 0, 0, 2, 2, 2, 2, 2, 1, 1, 0};
-    int operationCount = 12;
+    static final int operationCount = 12;
     String fitnessUnit = "m";
     String fitnessName = "Distance";
     float baselineEnergy = 0.0f;
-    float hazelStairs = -1;
+    static final float hazelStairs = -1;
     boolean saveFramesPerGeneration = true;
     int lastImageSaved = -1;
-    float pressureUnit = 500.0f / 2.37f;
+    static final float pressureUnit = 500.0f / 2.37f;
     static final float energyUnit = 20;
-    float nauseaUnit = 5;
+    static final float nauseaUnit = 5;
     int minBar = -10;
     int maxBar = 100;
     int barLen = maxBar - minBar;
@@ -48,7 +48,7 @@ public class MainApp extends PApplet {
     float scaleToFixBug = 1000;
     static float energy = 0;
     float averageNodeNausea = 0;
-    float totalNodeNausea = 0;
+    static float totalNodeNausea = 0;
     float lineY1 = -0.08f; // These are for the lines of text on each node.
     float lineY2 = 0.35f;
     int axonColor = color(255, 255, 0);
@@ -78,8 +78,8 @@ public class MainApp extends PApplet {
     int simulationTimer = 0;
     int[] creaturesInPosition = new int[1000];
     float camZoom = 0.015f;
-    float gravity = 0.005f;
-    float airFriction = 0.95f;
+    static final float gravity = 0.005f;
+    static final float airFriction = 0.95f;
     float target;
     float averageX;
     float averageY;
@@ -99,10 +99,10 @@ public class MainApp extends PApplet {
     ArrayList<Creature> c2 = new ArrayList<Creature>();
 
     public static void main(String[] args) {
-        PApplet.main("MainApp", args);
+        PApplet.main("Simulator", args);
     }
 
-    public MainApp() {
+    public Simulator() {
         self = this;
     }
 
