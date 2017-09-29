@@ -4,10 +4,11 @@ import evolution.Config;
 import evolution.Simulator;
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PGraphics;
 
 import java.util.ArrayList;
 
-public class Creature {
+public class Creature implements Drawable {
     private Config config;
     public ArrayList<Node> n;
     public ArrayList<Muscle> m;
@@ -26,6 +27,27 @@ public class Creature {
         alive = talive;
         creatureTimer = tct;
         mutability = tmut;
+    }
+
+    @Override
+    public void draw(ArrayList<Node> n, float x, float y, PGraphics graphics) {
+        for (Muscle aM : m) {
+            aM.draw(n, x, y, graphics);
+        }
+        for (Node aN : n) {
+            aN.draw(null, x, y, graphics);
+        }
+        for (Muscle aM : m) {
+            aM.drawAxons(n, x, y, graphics);
+        }
+        for (int i = 0; i < n.size(); i++) {
+            n.get(i).drawAxons(n, x, y, graphics);
+        }
+    }
+
+    @Override
+    public void drawAxons(ArrayList<Node> n, float x, float y, PGraphics graphics) {
+        // Nothing to do
     }
 
     public Creature modified(int id) {

@@ -178,23 +178,6 @@ public class Simulator extends PApplet {
             drawable.drawAxons(n, x, y, simulation.popUpImage);
         }
     }
-
-    void drawNode(Node ni, float x, float y, int toImage) {
-        draw(ni, null, x, y, toImage);
-    }
-
-    void drawNodeAxons(Node ni, ArrayList<Node> n, float x, float y, int toImage) {
-        drawAxons(ni, n, x, y, toImage);
-    }
-
-    void drawMuscle(Muscle mi, ArrayList<Node> n, float x, float y, int toImage) {
-        draw(mi, n, x, y, toImage);
-    }
-
-    void drawMuscleAxons(Muscle mi, ArrayList<Node> n, float x, float y, int toImage) {
-        drawAxons(mi, n, x, y, toImage);
-    }
-
     void drawPosts(int toImage) {
         int startPostY = min(-8, (int) (averageY / 4) * 4 - 4);
         if (toImage == 0) {
@@ -733,33 +716,11 @@ public class Simulator extends PApplet {
     }
 
     void drawCreature(Creature cj, float x, float y, int toImage) {
-        for (int i = 0; i < cj.m.size(); i++) {
-            drawMuscle(cj.m.get(i), cj.n, x, y, toImage);
-        }
-        for (int i = 0; i < cj.n.size(); i++) {
-            drawNode(cj.n.get(i), x, y, toImage);
-        }
-        for (int i = 0; i < cj.m.size(); i++) {
-            drawMuscleAxons(cj.m.get(i), cj.n, x, y, toImage);
-        }
-        for (int i = 0; i < cj.n.size(); i++) {
-            drawNodeAxons(cj.n.get(i), cj.n, x, y, toImage);
-        }
+        draw(cj,cj.n, x, y, toImage);
     }
 
     void drawCreaturePieces(ArrayList<Node> n, ArrayList<Muscle> m, float x, float y, int toImage) {
-        for (int i = 0; i < m.size(); i++) {
-            drawMuscle(m.get(i), n, x, y, toImage);
-        }
-        for (int i = 0; i < n.size(); i++) {
-            drawNode(n.get(i), x, y, toImage);
-        }
-        for (int i = 0; i < m.size(); i++) {
-            drawMuscleAxons(m.get(i), n, x, y, toImage);
-        }
-        for (int i = 0; i < n.size(); i++) {
-            drawNodeAxons(n.get(i), n, x, y, toImage);
-        }
+        draw(new Creature(config, -1, n, m, 0,false,0,0),n,  x, y, toImage);
     }
 
     void drawHistogram(int x, int y, int hw, int hh) {
