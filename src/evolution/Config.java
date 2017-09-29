@@ -1,6 +1,6 @@
 package evolution;
 
-import org.jetbrains.annotations.Contract;
+import processing.core.PFont;
 
 public class Config {
     private static final int ENERGY_DIRECTION = 1; // if 1, it'll count up how much energy is used.  if -1, it'll count down from the baseline energy, and when energy hits 0, the creature dies.
@@ -16,8 +16,17 @@ public class Config {
     private static final float GRAVITY = 0.005f;
     private static final float AIR_FRICTION = 0.95f;
 
+    private static final String[] OPERATION_NAMES = {"#", "time", "px", "py", "+", "-", "*", "÷", "%", "sin", "sig", "pres"};
+
+    public int axonColor;
+    private PFont font;
+
     public final float getScaleToFixBug() {
         return 1000.0f;
+    }
+
+    public String[] getOperationNames() {
+        return OPERATION_NAMES;
     }
 
     public int getEnergyDirection() {
@@ -66,5 +75,22 @@ public class Config {
 
     public float getAirFriction() {
         return AIR_FRICTION;
+    }
+
+    public PFont getFont() {
+        return font;
+    }
+
+    public void setFont(PFont font) {
+        this.font = font;
+    }
+
+
+    public int getAxonColor() {
+        return axonColor;
+    }
+
+    public void setAxonColor(int axonColor) {
+        this.axonColor = axonColor;
     }
 }

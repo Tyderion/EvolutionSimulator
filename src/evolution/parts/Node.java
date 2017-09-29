@@ -4,10 +4,20 @@ import evolution.Config;
 import evolution.Simulator;
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PGraphics;
 
 import java.util.ArrayList;
 
-public class Node {
+import static processing.core.PApplet.*;
+import static processing.core.PApplet.cos;
+import static processing.core.PApplet.sin;
+import static processing.core.PConstants.CENTER;
+import static processing.core.PConstants.PI;
+
+public class Node implements Drawable {
+    private static final float lineY1 = -0.08f; // These are for the lines of text on each node.
+    private static final float lineY2 = 0.35f;
+    private final float scaleToFixBug;
     public float x, y, vx, vy, prevX, prevY, pvx, pvy, m, f, value, valueToBe;
     public int operation, axon1, axon2;
     public boolean safeInput;
@@ -16,6 +26,7 @@ public class Node {
 
     public Node(Config config, float tx, float ty, float tvx, float tvy, float tm, float tf, float val, int op, int a1, int a2) {
         this.config = config;
+        this.scaleToFixBug = config.getScaleToFixBug();
         prevX = x = tx;
         prevY = y = ty;
         pvx = vx = tvx;
@@ -27,6 +38,44 @@ public class Node {
         axon1 = a1;
         axon2 = a2;
         pressure = 0;
+    }
+
+    @Override
+    public void draw(ArrayList<Node> n, float x, float y, PGraphics graphics) {
+        int c = graphics.color(512 - (int) (this.f * 512), 0, 0);
+        if (f <= 0.5) {
+            c = graphics.color(255, 255 - (int) (this.f * 512), 255 - (int) (this.f * 512));
+        }
+        graphics.fill(c);
+        graphics.noStroke();
+        graphics.ellipse((this.x + x) * scaleToFixBug, (this.y + y) * scaleToFixBug, m * scaleToFixBug, m * scaleToFixBug);
+        if (this.f >= 0.5) {
+            graphics.fill(255);
+        } else {
+            graphics.fill(0);
+        }
+        graphics.textAlign(CENTER);
+        graphics.textFont(config.getFont(), 0.4f * this.m * scaleToFixBug);
+        graphics.text(nf(value, 0, 2), (this.x + x) * scaleToFixBug, (this.y + this.m * lineY2 + y) * scaleToFixBug);
+        graphics.text(config.getOperationNames()[operation], (this.x + x) * scaleToFixBug, (this.y + m * lineY1 + y) * scaleToFixBug);
+    }
+
+    @Override
+    public void drawAxons(ArrayList<Node> n, float x, float y, PGraphics graphics) {
+        if (config.getOperationAxons()[this.operation] >= 1) {
+            drawAxon(n.get(this.axon1), x, y, graphics);
+        }
+        if (config.getOperationAxons()[this.operation] == 2) {
+            drawAxon(n.get(this.axon2), x, y, graphics);
+        }
+    }
+
+    private void drawAxon(Node src, float x, float y, PGraphics graphics) {
+        float point1x = this.x + m * 0.3f + x;
+        float point1y = this.y - m * 0.3f + y;
+        float point2x = src.x + x;
+        float point2y = src.y + src.m * 0.5f + y;
+        Axon.drawSingleAxon(point1x, point1y, point2x, point2y, graphics, scaleToFixBug, config.getAxonColor());
     }
 
     public void applyForces() {

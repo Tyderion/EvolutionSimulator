@@ -1,11 +1,7 @@
 package evolution;
 
-import evolution.parts.Creature;
-import evolution.parts.Muscle;
-import evolution.parts.Node;
-import evolution.parts.Rectangle;
+import evolution.parts.*;
 import processing.core.PApplet;
-import processing.core.PConstants;
 import processing.core.PFont;
 import processing.core.PGraphics;
 import processing.event.MouseEvent;
@@ -27,8 +23,7 @@ public class Simulator extends PApplet {
     ArrayList<Integer[]> speciesCounts = new ArrayList<Integer[]>(0);
     ArrayList<Integer> topSpeciesCounts = new ArrayList<Integer>(0);
     ArrayList<Creature> creatureDatabase = new ArrayList<Creature>(0);
-    private Simulation simulation;
-//    PGraphics graphImage;
+    //    PGraphics graphImage;
 //    PGraphics screenImage;
 //    PGraphics popUpImage;
 //    PGraphics segBarImage;
@@ -92,6 +87,7 @@ public class Simulator extends PApplet {
     ArrayList<Muscle> m = new ArrayList<Muscle>();
     Creature[] c = new Creature[1000];
     ArrayList<Creature> c2 = new ArrayList<Creature>();
+    private Simulation simulation;
 
     public Simulator() {
         self = this;
@@ -163,148 +159,40 @@ public class Simulator extends PApplet {
         }
     }
 
+    void draw(Drawable drawable, ArrayList<Node> n, float x, float y, int toImage) {
+        if (toImage == 0) {
+            drawable.draw(n, x, y, this.g);
+        } else if (toImage == 1) {
+            drawable.draw(n, x, y, simulation.screenImage);
+        } else if (toImage == 2) {
+            drawable.draw(n, x, y, simulation.popUpImage);
+        }
+    }
+
+    void drawAxons(Drawable drawable, ArrayList<Node> n, float x, float y, int toImage) {
+        if (toImage == 0) {
+            drawable.drawAxons(n, x, y, this.g);
+        } else if (toImage == 1) {
+            drawable.drawAxons(n, x, y, simulation.screenImage);
+        } else if (toImage == 2) {
+            drawable.drawAxons(n, x, y, simulation.popUpImage);
+        }
+    }
+
     void drawNode(Node ni, float x, float y, int toImage) {
-        int c = color(512 - (int) (ni.f * 512), 0, 0);
-        if (ni.f <= 0.5) {
-            c = color(255, 255 - (int) (ni.f * 512), 255 - (int) (ni.f * 512));
-        }
-        if (toImage == 0) {
-            fill(c);
-            noStroke();
-            ellipse((ni.x + x) * scaleToFixBug, (ni.y + y) * scaleToFixBug, ni.m * scaleToFixBug, ni.m * scaleToFixBug);
-            if (ni.f >= 0.5) {
-                fill(255);
-            } else {
-                fill(0);
-            }
-            textAlign(CENTER);
-            textFont(font, 0.4f * ni.m * scaleToFixBug);
-            text(nf(ni.value, 0, 2), (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY2 + y) * scaleToFixBug);
-            text(operationNames[ni.operation], (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY1 + y) * scaleToFixBug);
-        } else if (toImage == 1) {
-            simulation.screenImage.fill(c);
-            simulation.screenImage.noStroke();
-            simulation.screenImage.ellipse((ni.x + x) * scaleToFixBug, (ni.y + y) * scaleToFixBug, ni.m * scaleToFixBug, ni.m * scaleToFixBug);
-            if (ni.f >= 0.5) {
-                simulation.screenImage.fill(255);
-            } else {
-                simulation.screenImage.fill(0);
-            }
-            simulation.screenImage.textAlign(CENTER);
-            simulation.screenImage.textFont(font, 0.4f * ni.m * scaleToFixBug);
-            simulation.screenImage.text(nf(ni.value, 0, 2), (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY2 + y) * scaleToFixBug);
-            simulation.screenImage.text(operationNames[ni.operation], (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY1 + y) * scaleToFixBug);
-        } else if (toImage == 2) {
-            simulation.popUpImage.fill(c);
-            simulation.popUpImage.noStroke();
-            simulation.popUpImage.ellipse((ni.x + x) * scaleToFixBug, (ni.y + y) * scaleToFixBug, ni.m * scaleToFixBug, ni.m * scaleToFixBug);
-            if (ni.f >= 0.5) {
-                simulation.popUpImage.fill(255);
-            } else {
-                simulation.popUpImage.fill(0);
-            }
-            simulation.popUpImage.textAlign(CENTER);
-            simulation.popUpImage.textFont(font, 0.4f * ni.m * scaleToFixBug);
-            simulation.popUpImage.text(nf(ni.value, 0, 2), (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY2 + y) * scaleToFixBug);
-            simulation.popUpImage.text(operationNames[ni.operation], (ni.x + x) * scaleToFixBug, (ni.y + ni.m * lineY1 + y) * scaleToFixBug);
-        }
+        draw(ni, null, x, y, toImage);
     }
 
-    void drawNodeAxons(ArrayList<Node> n, int i, float x, float y, int toImage) {
-        Node ni = n.get(i);
-        if (config.getOperationAxons()[ni.operation] >= 1) {
-            Node axonSource = n.get(n.get(i).axon1);
-            float point1x = ni.x - ni.m * 0.3f + x;
-            float point1y = ni.y - ni.m * 0.3f + y;
-            float point2x = axonSource.x + x;
-            float point2y = axonSource.y + axonSource.m * 0.5f + y;
-            drawSingleAxon(point1x, point1y, point2x, point2y, toImage);
-        }
-        if (config.getOperationAxons()[ni.operation] == 2) {
-            Node axonSource = n.get(n.get(i).axon2);
-            float point1x = ni.x + ni.m * 0.3f + x;
-            float point1y = ni.y - ni.m * 0.3f + y;
-            float point2x = axonSource.x + x;
-            float point2y = axonSource.y + axonSource.m * 0.5f + y;
-            drawSingleAxon(point1x, point1y, point2x, point2y, toImage);
-        }
-    }
-
-    void drawSingleAxon(float x1, float y1, float x2, float y2, int toImage) {
-        float arrowHeadSize = 0.1f;
-        float angle = atan2(y2 - y1, x2 - x1);
-        if (toImage == 0) {
-            stroke(axonColor);
-            strokeWeight(0.03f * scaleToFixBug);
-            line(x1 * scaleToFixBug, y1 * scaleToFixBug, x2 * scaleToFixBug, y2 * scaleToFixBug);
-            line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug);
-            line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug);
-            noStroke();
-        } else if (toImage == 1) {
-            simulation.screenImage.stroke(axonColor);
-            simulation.screenImage.strokeWeight(0.03f * scaleToFixBug);
-            simulation.screenImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, x2 * scaleToFixBug, y2 * scaleToFixBug);
-            simulation.screenImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug);
-            simulation.screenImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug);
-            simulation.popUpImage.noStroke();
-        } else if (toImage == 2) {
-            simulation.popUpImage.stroke(axonColor);
-            simulation.popUpImage.strokeWeight(0.03f * scaleToFixBug);
-            simulation.popUpImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, x2 * scaleToFixBug, y2 * scaleToFixBug);
-            simulation.popUpImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 0.25f) * arrowHeadSize) * scaleToFixBug);
-            simulation.popUpImage.line(x1 * scaleToFixBug, y1 * scaleToFixBug, (x1 + cos(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug, (y1 + sin(angle + PI * 1.75f) * arrowHeadSize) * scaleToFixBug);
-            simulation.popUpImage.noStroke();
-        }
+    void drawNodeAxons(Node ni, ArrayList<Node> n, float x, float y, int toImage) {
+        drawAxons(ni, n, x, y, toImage);
     }
 
     void drawMuscle(Muscle mi, ArrayList<Node> n, float x, float y, int toImage) {
-        Node ni1 = n.get(mi.c1);
-        Node ni2 = n.get(mi.c2);
-        float w = 0.15f;
-        if (mi.axon >= 0 && mi.axon < n.size()) {
-            w = toMuscleUsable(n.get(mi.axon).value) * 0.15f;
-        }
-        if (toImage == 0) {
-            strokeWeight(w * scaleToFixBug);
-            stroke(70, 35, 0, mi.rigidity * 3000);
-            line((ni1.x + x) * scaleToFixBug, (ni1.y + y) * scaleToFixBug, (ni2.x + x) * scaleToFixBug, (ni2.y + y) * scaleToFixBug);
-        } else if (toImage == 1) {
-            simulation.screenImage.strokeWeight(w * scaleToFixBug);
-            simulation.screenImage.stroke(70, 35, 0, mi.rigidity * 3000);
-            simulation.screenImage.line((ni1.x + x) * scaleToFixBug, (ni1.y + y) * scaleToFixBug, (ni2.x + x) * scaleToFixBug, (ni2.y + y) * scaleToFixBug);
-        } else if (toImage == 2) {
-            simulation.popUpImage.strokeWeight(w * scaleToFixBug);
-            simulation.popUpImage.stroke(70, 35, 0, mi.rigidity * 3000);
-            simulation.popUpImage.line((ni1.x + x) * scaleToFixBug, (ni1.y + y) * scaleToFixBug, (ni2.x + x) * scaleToFixBug, (ni2.y + y) * scaleToFixBug);
-        }
+        draw(mi, n, x, y, toImage);
     }
 
     void drawMuscleAxons(Muscle mi, ArrayList<Node> n, float x, float y, int toImage) {
-        Node ni1 = n.get(mi.c1);
-        Node ni2 = n.get(mi.c2);
-        if (mi.axon >= 0 && mi.axon < n.size()) {
-            Node axonSource = n.get(mi.axon);
-            float muscleMidX = (ni1.x + ni2.x) * 0.5f + x;
-            float muscleMidY = (ni1.y + ni2.y) * 0.5f + y;
-            drawSingleAxon(muscleMidX, muscleMidY, axonSource.x + x, axonSource.y + axonSource.m * 0.5f + y, toImage);
-            float averageMass = (ni1.m + ni2.m) * 0.5f;
-            if (toImage == 0) {
-                fill(axonColor);
-                textAlign(CENTER);
-                textFont(font, 0.4f * averageMass * scaleToFixBug);
-                text(nf(toMuscleUsable(n.get(mi.axon).value), 0, 2), muscleMidX * scaleToFixBug, muscleMidY * scaleToFixBug);
-            } else if (toImage == 1) {
-                simulation.screenImage.fill(axonColor);
-                simulation.screenImage.textAlign(CENTER);
-                simulation.screenImage.textFont(font, 0.4f * averageMass * scaleToFixBug);
-                simulation.screenImage.text(nf(toMuscleUsable(n.get(mi.axon).value), 0, 2), muscleMidX * scaleToFixBug, muscleMidY * scaleToFixBug);
-            } else if (toImage == 2) {
-                simulation.popUpImage.fill(axonColor);
-                simulation.popUpImage.textAlign(CENTER);
-                simulation.popUpImage.textFont(font, 0.4f * averageMass * scaleToFixBug);
-                simulation.popUpImage.text(nf(toMuscleUsable(n.get(mi.axon).value), 0, 2), muscleMidX * scaleToFixBug, muscleMidY * scaleToFixBug);
-            }
-        }
+        drawAxons(mi, n, x, y, toImage);
     }
 
     void drawPosts(int toImage) {
@@ -855,7 +743,7 @@ public class Simulator extends PApplet {
             drawMuscleAxons(cj.m.get(i), cj.n, x, y, toImage);
         }
         for (int i = 0; i < cj.n.size(); i++) {
-            drawNodeAxons(cj.n, i, x, y, toImage);
+            drawNodeAxons(cj.n.get(i), cj.n, x, y, toImage);
         }
     }
 
@@ -870,7 +758,7 @@ public class Simulator extends PApplet {
             drawMuscleAxons(m.get(i), n, x, y, toImage);
         }
         for (int i = 0; i < n.size(); i++) {
-            drawNodeAxons(n, i, x, y, toImage);
+            drawNodeAxons(n.get(i), n, x, y, toImage);
         }
     }
 
@@ -1051,6 +939,8 @@ public class Simulator extends PApplet {
         simulation.popUpImage.endDraw();
 
         font = loadFont("Helvetica-Bold-96.vlw");
+        config.setFont(font);
+        config.setAxonColor(axonColor);
         textFont(font, 96);
         textAlign(CENTER);
 
@@ -1484,9 +1374,9 @@ public class Simulator extends PApplet {
                 }
                 fill(0);
                 textFont(font, 16);
-                text("Worst evolution.parts.Creature", 830, 310);
-                text("Median evolution.parts.Creature", 990, 310);
-                text("Best evolution.parts.Creature", 1150, 310);
+                text("Worst Creature", 830, 310);
+                text("Median Creature", 990, 310);
+                text("Best Creature", 1150, 310);
             }
             if (justGotBack) justGotBack = false;
         }
