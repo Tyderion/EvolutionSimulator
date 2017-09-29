@@ -17,7 +17,6 @@ public class Creature implements Drawable {
     public boolean alive;
     public float mutability;
 
-    public float creatureTimer;
 //    public Creature(Config config, int tid, ArrayList<Node> tn, ArrayList<Muscle> tm, float td, boolean talive, float tct, float tmut) {
 //    public Creature(Config config, int id, ArrayList<Node> nodes, ArrayList<Muscle> muscles, boolean alive, float mutability) {
 //        this(config, id, nodes, muscles, 0, alive, mutability);
@@ -31,7 +30,6 @@ public class Creature implements Drawable {
         this.fitness = fitness;
         this.alive = alive;
         this.mutability = mutability;
-        this.creatureTimer = timer;
     }
 
     @Override
@@ -57,7 +55,7 @@ public class Creature implements Drawable {
 
     public Creature modified(int id) {
         Creature modifiedCreature = new Creature(config, id,
-                new ArrayList<Node>(0), new ArrayList<Muscle>(0), 0, true, creatureTimer + Simulator.r() * 16 * mutability, PApplet.min(mutability * Simulator.rand(0.8f, 1.25f), 2));
+                new ArrayList<Node>(0), new ArrayList<Muscle>(0), 0, true, 0, PApplet.min(mutability * Simulator.rand(0.8f, 1.25f), 2));
         for (int i = 0; i < nodes.size(); i++) {
             modifiedCreature.nodes.add(nodes.get(i).modifyNode(mutability, nodes.size()));
         }
@@ -256,6 +254,6 @@ public class Creature implements Drawable {
         if (newID == -1) {
             newID = id;
         }
-        return new Creature(config, newID, n2, m2, fitness, alive, creatureTimer, mutability);
+        return new Creature(config, newID, n2, m2, fitness, alive, 0, mutability);
     }
 }
