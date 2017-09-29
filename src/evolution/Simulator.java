@@ -769,7 +769,7 @@ public class Simulator extends PApplet {
         fill(255);
         rect(px - 60, py, 120, 52);
         fill(0);
-        textFont(font, 12);
+        textFont(font, 13);
         textAlign(CENTER);
         text("#" + rank, px, py + 12);
         text("ID: " + cj.id, px, py + 24);
