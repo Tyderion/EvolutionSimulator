@@ -51,7 +51,7 @@ public class Simulator extends PApplet {
     float camX = 0;
     float camY = 0;
     int frames = 60;
-    int menu = 0;
+    Menu menu = Menu.START_SCREEN;
     int gen = -1;
     float sliderX = 1170;
     int genSelected = 0;
@@ -436,7 +436,7 @@ public class Simulator extends PApplet {
 
     public void mouseWheel(MouseEvent event) {
         float delta = event.getCount();
-        if (menu == 5) {
+        if (menu == Menu.SIMULATION_RUNNING) {
             if (delta == -1) {
                 camZoom *= 0.9090909;
                 if (camZoom < 0.002) {
@@ -459,7 +459,7 @@ public class Simulator extends PApplet {
         }
         float mX = mouseX / windowSizeMultiplier;
         float mY = mouseY / windowSizeMultiplier;
-        if (menu == 1 && gen >= 1 && abs(mY - 365) <= 25 && abs(mX - sliderX - 25) <= 25) {
+        if (menu == Menu.MAIN_SCREEN && gen >= 1 && abs(mY - 365) <= 25 && abs(mX - sliderX - 25) <= 25) {
             drag = true;
         }
     }
@@ -482,9 +482,9 @@ public class Simulator extends PApplet {
         }
     }
 
-    void setMenu(int m) {
+    void setMenu(Menu m) {
         menu = m;
-        if (m == 1) {
+        if (m == Menu.MAIN_SCREEN) {
             drawGraph(975, 570);
         }
     }
@@ -498,7 +498,7 @@ public class Simulator extends PApplet {
     }
 
     void startASAP() {
-        setMenu(4);
+        setMenu(Menu.START_SIMULATION);
         creaturesTested = 0;
         stepbystep = false;
         stepbystepslow = false;
@@ -509,20 +509,20 @@ public class Simulator extends PApplet {
         miniSimulation = false;
         float mX = mouseX / windowSizeMultiplier;
         float mY = mouseY / windowSizeMultiplier;
-        if (menu == 0 && abs(mX - windowWidth / 2) <= 200 && abs(mY - 400) <= 100) {
-            setMenu(1);
-        } else if (menu == 1 && gen == -1 && abs(mX - 120) <= 100 && abs(mY - 300) <= 50) {
-            setMenu(2);
-        } else if (menu == 1 && gen >= 0 && abs(mX - 990) <= 230) {
+        if (menu == Menu.START_SCREEN && abs(mX - windowWidth / 2) <= 200 && abs(mY - 400) <= 100) {
+            setMenu(Menu.MAIN_SCREEN);
+        } else if (menu == Menu.MAIN_SCREEN && gen == -1 && abs(mX - 120) <= 100 && abs(mY - 300) <= 50) {
+            setMenu(Menu.CREATE_CREATURES);
+        } else if (menu == Menu.MAIN_SCREEN && gen >= 0 && abs(mX - 990) <= 230) {
             if (abs(mY - 40) <= 20) {
-                setMenu(4);
+                setMenu(Menu.START_SIMULATION);
                 speed = 1;
                 creaturesTested = 0;
                 stepbystep = true;
                 stepbystepslow = true;
             }
             if (abs(mY - 90) <= 20) {
-                setMenu(4);
+                setMenu(Menu.START_SIMULATION);
                 creaturesTested = 0;
                 stepbystep = true;
                 stepbystepslow = false;
@@ -535,12 +535,12 @@ public class Simulator extends PApplet {
                 }
                 startASAP();
             }
-        } else if (menu == 3 && abs(mX - 1030) <= 130 && abs(mY - 684) <= 20) {
+        } else if (menu == Menu.VIEW_GENERATED && abs(mX - 1030) <= 130 && abs(mY - 684) <= 20) {
             gen = 0;
-            setMenu(1);
-        } else if (menu == 7 && abs(mX - 1030) <= 130 && abs(mY - 684) <= 20) {
-            setMenu(8);
-        } else if ((menu == 5 || menu == 4) && mY >= windowHeight - 40) {
+            setMenu(Menu.MAIN_SCREEN);
+        } else if (menu == Menu.SIMULATION_RESULT && abs(mX - 1030) <= 130 && abs(mY - 684) <= 20) {
+            setMenu(Menu.SIMULATION_SORT_VIS);
+        } else if ((menu == Menu.SIMULATION_RUNNING || menu == Menu.START_SIMULATION) && mY >= windowHeight - 40) {
             if (mX < 90) {
                 for (int s = timer; s < 900; s++) {
                     simulate();
@@ -564,16 +564,16 @@ public class Simulator extends PApplet {
                     setAverages();
                     setFitness(i);
                 }
-                setMenu(6);
+                setMenu(Menu.CLEANUP_SIMULATION);
             }
-        } else if (menu == 8 && mX < 90 && mY >= windowHeight - 40) {
+        } else if (menu == Menu.SIMULATION_SORT_VIS && mX < 90 && mY >= windowHeight - 40) {
             timer = 100000;
-        } else if (menu == 9 && abs(mX - 1030) <= 130 && abs(mY - 690) <= 20) {
-            setMenu(10);
-        } else if (menu == 11 && abs(mX - 1130) <= 80 && abs(mY - 690) <= 20) {
-            setMenu(12);
-        } else if (menu == 13 && abs(mX - 1130) <= 80 && abs(mY - 690) <= 20) {
-            setMenu(1);
+        } else if (menu == Menu.SIMULATION_RESULT_SORTED && abs(mX - 1030) <= 130 && abs(mY - 690) <= 20) {
+            setMenu(Menu.KILL_500);
+        } else if (menu == Menu.KILLS_VISUALIZE && abs(mX - 1130) <= 80 && abs(mY - 690) <= 20) {
+            setMenu(Menu.REPRODUCE);
+        } else if (menu == Menu.SHOW_NEW_CREATURES && abs(mX - 1130) <= 80 && abs(mY - 690) <= 20) {
+            setMenu(Menu.MAIN_SCREEN);
         }
     }
 
@@ -737,7 +737,7 @@ public class Simulator extends PApplet {
         noFill();
         if (statusWindow >= 0) {
             cj = c2.get(statusWindow);
-            if (menu == 7) {
+            if (menu == Menu.SIMULATION_RESULT) {
                 int id = ((cj.id - 1) % 1000);
                 x = id % 40;
                 y = floor(id / 40);
@@ -892,7 +892,7 @@ public class Simulator extends PApplet {
 
     public void draw() {
         scale(windowSizeMultiplier);
-        if (menu == 0) {
+        if (menu == Menu.START_SCREEN) {
             background(255);
             fill(100, 200, 100);
             noStroke();
@@ -900,7 +900,7 @@ public class Simulator extends PApplet {
             fill(0);
             text("EVOLUTION!", windowWidth / 2, 200);
             text("START", windowWidth / 2, 430);
-        } else if (menu == 1) {
+        } else if (menu == Menu.MAIN_SCREEN) {
             noStroke();
             fill(0);
             background(255, 200, 130);
@@ -949,7 +949,7 @@ public class Simulator extends PApplet {
                     startASAP();
                 }
             }
-        } else if (menu == 2) {
+        } else if (menu == Menu.CREATE_CREATURES) {
             creatures = 0;
             background(220, 253, 102);
             pushMatrix();
@@ -995,7 +995,7 @@ public class Simulator extends PApplet {
                     c[y * 40 + x].checkForBadAxons();
                 }
             }
-            setMenu(3);
+            setMenu(Menu.VIEW_GENERATED);
             popMatrix();
             noStroke();
             fill(100, 100, 200);
@@ -1005,10 +1005,10 @@ public class Simulator extends PApplet {
             textFont(font, 24);
             text("Here are your 1000 randomly generated creatures!!!", windowWidth / 2 - 200, 690);
             text("Back", windowWidth - 250, 690);
-        } else if (menu == 4) {
+        } else if (menu == Menu.START_SIMULATION) {
             setGlobalVariables(c[creaturesTested]);
             camZoom = 0.01f;
-            setMenu(5);
+            setMenu(Menu.SIMULATION_RUNNING);
             if (!stepbystepslow) {
                 for (int i = 0; i < 1000; i++) {
                     setGlobalVariables(c[i]);
@@ -1018,10 +1018,10 @@ public class Simulator extends PApplet {
                     setAverages();
                     setFitness(i);
                 }
-                setMenu(6);
+                setMenu(Menu.CLEANUP_SIMULATION);
             }
         }
-        if (menu == 5) { //simulate running
+        if (menu == Menu.SIMULATION_RUNNING) { //simulate running
             if (timer <= 900) {
                 background(120, 200, 255);
                 for (int s = 0; s < speed; s++) {
@@ -1071,10 +1071,10 @@ public class Simulator extends PApplet {
                 setFitness(creaturesTested);
             }
             if (timer >= 1020) {
-                setMenu(4);
+                setMenu(Menu.START_SIMULATION);
                 creaturesTested++;
                 if (creaturesTested == 1000) {
-                    setMenu(6);
+                    setMenu(Menu.CLEANUP_SIMULATION);
                 }
                 camX = 0;
             }
@@ -1082,7 +1082,7 @@ public class Simulator extends PApplet {
                 timer += speed;
             }
         }
-        if (menu == 6) {
+        if (menu == Menu.CLEANUP_SIMULATION) {
             //sort
             c2 = new ArrayList<Creature>(0);
             for (int i = 0; i < 1000; i++) {
@@ -1130,12 +1130,12 @@ public class Simulator extends PApplet {
             topSpeciesCounts.add(holder);
             if (stepbystep) {
                 drawScreenImage(0);
-                setMenu(7);
+                setMenu(Menu.SIMULATION_RESULT);
             } else {
-                setMenu(10);
+                setMenu(Menu.KILL_500);
             }
         }
-        if (menu == 8) {
+        if (menu == Menu.SIMULATION_SORT_VIS) {
             //cool sorting animation
             background(220, 253, 102);
             pushMatrix();
@@ -1161,7 +1161,7 @@ public class Simulator extends PApplet {
             drawSkipButton();
             if (timer > 60 * PI) {
                 drawScreenImage(1);
-                setMenu(9);
+                setMenu(Menu.SIMULATION_RESULT_SORTED);
             }
         }
         float mX = mouseX / windowSizeMultiplier;
@@ -1169,11 +1169,13 @@ public class Simulator extends PApplet {
         float mY = mouseY / windowSizeMultiplier;
         ;
         prevStatusWindow = statusWindow;
-        if (abs(menu - 9) <= 2 && gensToDo == 0 && !drag) {
+        //TODO: WTF IS THIS MENU CALUCLATING
+        if (abs(menu.value - 9) <= 2 && gensToDo == 0 && !drag) {
             if (abs(mX - 639.5f) <= 599.5) {
-                if (menu == 7 && abs(mY - 329) <= 312) {
+                if (menu == Menu.SIMULATION_RESULT && abs(mY - 329) <= 312) {
                     statusWindow = creaturesInPosition[floor((mX - 40) / 30) + floor((mY - 17) / 25) * 40];
-                } else if (menu >= 9 && abs(mY - 354) <= 312) {
+                    //TODO: WTF IS THIS MENU CALUCLATING
+                } else if (menu.value >= 9 && abs(mY - 354) <= 312) {
                     statusWindow = floor((mX - 40) / 30) + floor((mY - 42) / 25) * 40;
                 } else {
                     statusWindow = -4;
@@ -1181,7 +1183,7 @@ public class Simulator extends PApplet {
             } else {
                 statusWindow = -4;
             }
-        } else if (menu == 1 && genSelected >= 1 && gensToDo == 0 && !drag) {
+        } else if (menu == Menu.MAIN_SCREEN && genSelected >= 1 && gensToDo == 0 && !drag) {
             statusWindow = -4;
             if (abs(mY - 250) <= 70) {
                 if (abs(mX - 990) <= 230) {
@@ -1194,7 +1196,7 @@ public class Simulator extends PApplet {
         } else {
             statusWindow = -4;
         }
-        if (menu == 10) {
+        if (menu == Menu.KILL_500) {
             //Kill!
             for (int j = 0; j < 500; j++) {
                 float f = ((float) j) / 1000.0f;
@@ -1216,12 +1218,12 @@ public class Simulator extends PApplet {
             }
             if (stepbystep) {
                 drawScreenImage(2);
-                setMenu(11);
+                setMenu(Menu.KILLS_VISUALIZE);
             } else {
-                setMenu(12);
+                setMenu(Menu.REPRODUCE);
             }
         }
-        if (menu == 12) { //Reproduce and mutate
+        if (menu == Menu.REPRODUCE) { //Reproduce and mutate
             justGotBack = true;
             for (int j = 0; j < 500; j++) {
                 int j2 = j;
@@ -1244,15 +1246,16 @@ public class Simulator extends PApplet {
             drawScreenImage(3);
             gen++;
             if (stepbystep) {
-                setMenu(13);
+                setMenu(Menu.SHOW_NEW_CREATURES);
             } else {
-                setMenu(1);
+                setMenu(Menu.MAIN_SCREEN);
             }
         }
-        if (menu % 2 == 1 && abs(menu - 10) <= 3) {
+        //TODO WTF IS THAT MENU CALUCATION
+        if (menu.value % 2 == 1 && abs(menu.value - 10) <= 3) {
             image(simulation.screenImage, 0, 0, 1280, 720);
         }
-        if (menu == 1 || gensToDo >= 1) {
+        if (menu == Menu.MAIN_SCREEN || gensToDo >= 1) {
             mX = mouseX / windowSizeMultiplier;
             ;
             mY = mouseY / windowSizeMultiplier;

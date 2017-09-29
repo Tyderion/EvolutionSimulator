@@ -16,9 +16,9 @@ public enum Menu {
     REPRODUCE(12),
     SHOW_NEW_CREATURES(13);
 
-    private final int menu;
+    public final int value;
 
-    Menu(int menu) {
-        this.menu = menu;
+    Menu(int value) {
+        this.value = value;
     }
 }
