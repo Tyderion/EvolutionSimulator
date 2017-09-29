@@ -775,9 +775,9 @@ public class Simulator extends PApplet {
         text("ID: " + cj.id, px, py + 24);
         text("Fitness: " + nf(cj.fitness, 0, 3), px, py + 36);
         colorMode(HSB, 1);
-        int sp = (cj.nodes.size() % 10) * 10 + (cj.m.size() % 10);
+        int sp = (cj.nodes.size() % 10) * 10 + (cj.muscles.size() % 10);
         fill(getColor(sp, true));
-        text("Species: S" + (cj.nodes.size() % 10) + "" + (cj.m.size() % 10), px, py + 48);
+        text("Species: S" + (cj.nodes.size() % 10) + "" + (cj.muscles.size() % 10), px, py + 48);
         colorMode(RGB, 255);
         if (miniSimulation) {
             int py2 = py - 125;
@@ -1111,7 +1111,7 @@ public class Simulator extends PApplet {
                 if (bar >= 0 && bar < barLen) {
                     barCounts.get(gen + 1)[bar]++;
                 }
-                int species = (c2.get(i).nodes.size() % 10) * 10 + c2.get(i).m.size() % 10;
+                int species = (c2.get(i).nodes.size() % 10) * 10 + c2.get(i).muscles.size() % 10;
                 beginSpecies[species]++;
             }
             speciesCounts.add(new Integer[101]);
@@ -1235,7 +1235,7 @@ public class Simulator extends PApplet {
 
                 c2.set(999 - j2, cj.modified(cj2.id + 1000));   //mutated offspring 1
                 n = c2.get(999 - j2).nodes;
-                m = c2.get(999 - j2).m;
+                m = c2.get(999 - j2).muscles;
                 toStableConfiguration(n.size(), m.size());
                 adjustToCenter(n.size());
             }
@@ -1379,8 +1379,8 @@ public class Simulator extends PApplet {
         for (int i = 0; i < thisCreature.nodes.size(); i++) {
             n.add(thisCreature.nodes.get(i).copyNode());
         }
-        for (int i = 0; i < thisCreature.m.size(); i++) {
-            m.add(thisCreature.m.get(i).copyMuscle());
+        for (int i = 0; i < thisCreature.muscles.size(); i++) {
+            m.add(thisCreature.muscles.get(i).copyMuscle());
         }
         id = thisCreature.id;
         timer = 0;

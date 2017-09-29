@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class Creature implements Drawable {
     private Config config;
     public ArrayList<Node> nodes;
-    public ArrayList<Muscle> m;
+    public ArrayList<Muscle> muscles;
     public float fitness;
     public int id;
     public boolean alive;
@@ -24,7 +24,7 @@ public class Creature implements Drawable {
     private Creature(Config config, int id, ArrayList<Node> nodes, ArrayList<Muscle> muscles, float fitness, boolean alive, float mutability) {
         this.config = config;
         this.id = id;
-        this.m = muscles;
+        this.muscles = muscles;
         this.nodes = nodes;
         this.fitness = fitness;
         this.alive = alive;
@@ -33,13 +33,13 @@ public class Creature implements Drawable {
 
     @Override
     public void draw(ArrayList<Node> n, float x, float y, PGraphics graphics) {
-        for (Muscle aM : m) {
+        for (Muscle aM : muscles) {
             aM.draw(n, x, y, graphics);
         }
         for (Node aN : n) {
             aN.draw(null, x, y, graphics);
         }
-        for (Muscle aM : m) {
+        for (Muscle aM : muscles) {
             aM.drawAxons(n, x, y, graphics);
         }
         for (int i = 0; i < n.size(); i++) {
@@ -58,8 +58,8 @@ public class Creature implements Drawable {
         for (int i = 0; i < nodes.size(); i++) {
             modifiedCreature.nodes.add(nodes.get(i).modifyNode(mutability, nodes.size()));
         }
-        for (int i = 0; i < m.size(); i++) {
-            modifiedCreature.m.add(m.get(i).modifyMuscle(nodes.size(), mutability));
+        for (int i = 0; i < muscles.size(); i++) {
+            modifiedCreature.muscles.add(muscles.get(i).modifyMuscle(nodes.size(), mutability));
         }
         if (Simulator.rand(0, 1) < config.getBigMutationChance() * mutability || nodes.size() <= 2) { //Add a node
             modifiedCreature.addRandomNode();
@@ -70,7 +70,7 @@ public class Creature implements Drawable {
         if (Simulator.rand(0, 1) < config.getBigMutationChance() * mutability && modifiedCreature.nodes.size() >= 4) { //Remove a node
             modifiedCreature.removeRandomNode();
         }
-        if (Simulator.rand(0, 1) < config.getBigMutationChance() * mutability && modifiedCreature.m.size() >= 2) { //Remove a muscle
+        if (Simulator.rand(0, 1) < config.getBigMutationChance() * mutability && modifiedCreature.muscles.size() >= 2) { //Remove a muscle
             modifiedCreature.removeRandomMuscle();
         }
         modifiedCreature.checkForOverlap();
@@ -81,21 +81,21 @@ public class Creature implements Drawable {
 
     public void checkForOverlap() {
         ArrayList<Integer> bads = new ArrayList<Integer>();
-        for (int i = 0; i < m.size(); i++) {
-            for (int j = i + 1; j < m.size(); j++) {
-                if (m.get(i).c1 == m.get(j).c1 && m.get(i).c2 == m.get(j).c2) {
+        for (int i = 0; i < muscles.size(); i++) {
+            for (int j = i + 1; j < muscles.size(); j++) {
+                if (muscles.get(i).c1 == muscles.get(j).c1 && muscles.get(i).c2 == muscles.get(j).c2) {
                     bads.add(i);
-                } else if (m.get(i).c1 == m.get(j).c2 && m.get(i).c2 == m.get(j).c1) {
+                } else if (muscles.get(i).c1 == muscles.get(j).c2 && muscles.get(i).c2 == muscles.get(j).c1) {
                     bads.add(i);
-                } else if (m.get(i).c1 == m.get(i).c2) {
+                } else if (muscles.get(i).c1 == muscles.get(i).c2) {
                     bads.add(i);
                 }
             }
         }
         for (int i = bads.size() - 1; i >= 0; i--) {
             int b = bads.get(i) + 0;
-            if (b < m.size()) {
-                m.remove(b);
+            if (b < muscles.size()) {
+                muscles.remove(b);
             }
         }
     }
@@ -105,8 +105,8 @@ public class Creature implements Drawable {
             for (int i = 0; i < nodes.size(); i++) {
                 int connections = 0;
                 int connectedTo = -1;
-                for (int j = 0; j < m.size(); j++) {
-                    if (m.get(j).c1 == i || m.get(j).c2 == i) {
+                for (int j = 0; j < muscles.size(); j++) {
+                    if (muscles.get(j).c1 == i || muscles.get(j).c2 == i) {
                         connections++;
                         connectedTo = j;
                     }
@@ -132,8 +132,8 @@ public class Creature implements Drawable {
                 ni.axon2 = (int) (Simulator.rand(0, nodes.size()));
             }
         }
-        for (int i = 0; i < m.size(); i++) {
-            Muscle mi = m.get(i);
+        for (int i = 0; i < muscles.size(); i++) {
+            Muscle mi = muscles.get(i);
             if (mi.axon >= nodes.size()) {
                 mi.axon = Muscle.getNewMuscleAxon(nodes.size());
             }
@@ -212,33 +212,33 @@ public class Creature implements Drawable {
         if (tc1 != -1) {
             len = PApplet.dist(nodes.get(tc1).x, nodes.get(tc1).y, nodes.get(tc2).x, nodes.get(tc2).y);
         }
-        m.add(new Muscle(config, axon, tc1, tc2, len, Simulator.rand(0.02f, 0.08f)));
+        muscles.add(new Muscle(config, axon, tc1, tc2, len, Simulator.rand(0.02f, 0.08f)));
     }
 
     void removeRandomNode() {
         int choice = PApplet.floor(Simulator.rand(0, nodes.size()));
         nodes.remove(choice);
         int i = 0;
-        while (i < m.size()) {
-            if (m.get(i).c1 == choice || m.get(i).c2 == choice) {
-                m.remove(i);
+        while (i < muscles.size()) {
+            if (muscles.get(i).c1 == choice || muscles.get(i).c2 == choice) {
+                muscles.remove(i);
             } else {
                 i++;
             }
         }
-        for (int j = 0; j < m.size(); j++) {
-            if (m.get(j).c1 >= choice) {
-                m.get(j).c1--;
+        for (int j = 0; j < muscles.size(); j++) {
+            if (muscles.get(j).c1 >= choice) {
+                muscles.get(j).c1--;
             }
-            if (m.get(j).c2 >= choice) {
-                m.get(j).c2--;
+            if (muscles.get(j).c2 >= choice) {
+                muscles.get(j).c2--;
             }
         }
     }
 
     void removeRandomMuscle() {
-        int choice = PApplet.floor(Simulator.rand(0, m.size()));
-        m.remove(choice);
+        int choice = PApplet.floor(Simulator.rand(0, muscles.size()));
+        muscles.remove(choice);
     }
 
     public Creature copyCreature(int newID) {
@@ -247,8 +247,8 @@ public class Creature implements Drawable {
         for (int i = 0; i < nodes.size(); i++) {
             n2.add(this.nodes.get(i).copyNode());
         }
-        for (int i = 0; i < m.size(); i++) {
-            m2.add(this.m.get(i).copyMuscle());
+        for (int i = 0; i < muscles.size(); i++) {
+            m2.add(this.muscles.get(i).copyMuscle());
         }
         if (newID == -1) {
             newID = id;
