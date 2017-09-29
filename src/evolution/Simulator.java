@@ -88,6 +88,7 @@ public class Simulator extends PApplet {
     Creature[] c = new Creature[1000];
     ArrayList<Creature> c2 = new ArrayList<Creature>();
     private Simulation simulation;
+    private Ground ground;
 
     public Simulator() {
         self = this;
@@ -114,48 +115,11 @@ public class Simulator extends PApplet {
         return ((float) a) + ((float) b - (float) a) * offset;
     }
 
-    int rInt() {
-        return (int) (random(-0.01f, 1.01f));
-    }
-
     void drawGround(int toImage) {
-        int stairDrawStart = max(1, (int) (-averageY / config.getHazelStairs()) - 10);
         if (toImage == 0) {
-            noStroke();
-            fill(0, 130, 0);
-            if (config.hasGround())
-                rect((camX - camZoom * 800.0f) * scaleToFixBug, 0 * scaleToFixBug, (camZoom * 1600.0f) * scaleToFixBug, (camZoom * 900.0f) * scaleToFixBug);
-            for (int i = 0; i < rects.size(); i++) {
-                Rectangle r = rects.get(i);
-                rect(r.x1 * scaleToFixBug, r.y1 * scaleToFixBug, (r.x2 - r.x1) * scaleToFixBug, (r.y2 - r.y1) * scaleToFixBug);
-            }
-            if (config.getHazelStairs() > 0) {
-                for (int i = stairDrawStart; i < stairDrawStart + 20; i++) {
-                    fill(255, 255, 255, 128);
-                    rect((averageX - 20) * scaleToFixBug, -config.getHazelStairs() * i * scaleToFixBug, 40 * scaleToFixBug, config.getHazelStairs() * 0.3f * scaleToFixBug);
-                    fill(255, 255, 255, 255);
-                    rect((averageX - 20) * scaleToFixBug, -config.getHazelStairs() * i * scaleToFixBug, 40 * scaleToFixBug, config.getHazelStairs() * 0.15f * scaleToFixBug);
-                }
-            }
+            ground.draw(averageX, averageY, 800, 1600, 900, camX, camZoom, this.g);
         } else if (toImage == 2) {
-            simulation.popUpImage.noStroke();
-            simulation.popUpImage.fill(0, 130, 0);
-            if (config.hasGround())
-                simulation.popUpImage.rect((camX - camZoom * 300.0f) * scaleToFixBug, 0 * scaleToFixBug, (camZoom * 600.0f) * scaleToFixBug, (camZoom * 600.0f) * scaleToFixBug);
-            float ww = 450;
-            float wh = 450;
-            for (int i = 0; i < rects.size(); i++) {
-                Rectangle r = rects.get(i);
-                simulation.popUpImage.rect(r.x1 * scaleToFixBug, r.y1 * scaleToFixBug, (r.x2 - r.x1) * scaleToFixBug, (r.y2 - r.y1) * scaleToFixBug);
-            }
-            if (config.getHazelStairs() > 0) {
-                for (int i = stairDrawStart; i < stairDrawStart + 20; i++) {
-                    simulation.popUpImage.fill(255, 255, 255, 128);
-                    simulation.popUpImage.rect((averageX - 20) * scaleToFixBug, -config.getHazelStairs() * i * scaleToFixBug, 40 * scaleToFixBug, config.getHazelStairs() * 0.3f * scaleToFixBug);
-                    simulation.popUpImage.fill(255, 255, 255, 255);
-                    simulation.popUpImage.rect((averageX - 20) * scaleToFixBug, -config.getHazelStairs() * i * scaleToFixBug, 40 * scaleToFixBug, config.getHazelStairs() * 0.15f * scaleToFixBug);
-                }
-            }
+            ground.draw(averageX, averageY, 300, 600, 600, camX, camZoom, simulation.popUpImage);
         }
     }
 
@@ -169,15 +133,6 @@ public class Simulator extends PApplet {
         }
     }
 
-    void drawAxons(Drawable drawable, ArrayList<Node> n, float x, float y, int toImage) {
-        if (toImage == 0) {
-            drawable.drawAxons(n, x, y, this.g);
-        } else if (toImage == 1) {
-            drawable.drawAxons(n, x, y, simulation.screenImage);
-        } else if (toImage == 2) {
-            drawable.drawAxons(n, x, y, simulation.popUpImage);
-        }
-    }
     void drawPosts(int toImage) {
         int startPostY = min(-8, (int) (averageY / 4) * 4 - 4);
         if (toImage == 0) {
@@ -931,6 +886,8 @@ public class Simulator extends PApplet {
    rects.add(new Rectangle(3.75,-3.75,400,4));
    rects.add(new Rectangle(5.25,-5.25,400,4));
    rects.add(new Rectangle(-400,-5.25,0,4));*/
+
+        ground = new Ground(config, rects);
     }
 
     public void draw() {
