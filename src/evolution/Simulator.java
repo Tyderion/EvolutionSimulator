@@ -675,7 +675,7 @@ public class Simulator extends PApplet {
     }
 
     void drawCreaturePieces(ArrayList<Node> n, ArrayList<Muscle> m, float x, float y, int toImage) {
-        draw(new Creature(config, -1, n, m, 0,false,0,0),n,  x, y, toImage);
+        draw(new Creature(config, -1, n, m, false, 0),n,  x, y, toImage);
     }
 
     void drawHistogram(int x, int y, int hw, int hh) {
@@ -988,7 +988,7 @@ public class Simulator extends PApplet {
                     toStableConfiguration(nodeNum, muscleNum);
                     adjustToCenter(nodeNum);
                     float heartbeat = random(40, 80);
-                    c[y * 40 + x] = new Creature(config, y * 40 + x + 1, new ArrayList<Node>(n), new ArrayList<Muscle>(m), 0, true, heartbeat, 1.0f);
+                    c[y * 40 + x] = new Creature(config, y * 40 + x + 1, new ArrayList<Node>(n), new ArrayList<Muscle>(m),  true, 1.0f);
                     drawCreature(c[y * 40 + x], x * 3 + 5.5f, y * 2.5f + 3, 0);
                     c[y * 40 + x].checkForOverlap();
                     c[y * 40 + x].checkForLoneNodes();
