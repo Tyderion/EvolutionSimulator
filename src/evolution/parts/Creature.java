@@ -7,6 +7,7 @@ import processing.core.PConstants;
 import processing.core.PGraphics;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Creature implements Drawable {
     private Config config;
@@ -242,14 +243,10 @@ public class Creature implements Drawable {
     }
 
     public Creature copyCreature(int newID) {
-        ArrayList<Node> n2 = new ArrayList<Node>(0);
-        ArrayList<Muscle> m2 = new ArrayList<Muscle>(0);
-        for (int i = 0; i < nodes.size(); i++) {
-            n2.add(this.nodes.get(i).copyNode());
-        }
-        for (int i = 0; i < muscles.size(); i++) {
-            m2.add(this.muscles.get(i).copyMuscle());
-        }
+        ArrayList<Node> n2;
+        ArrayList<Muscle> m2;
+        n2 = nodes.stream().map(Node::copyNode).collect(Collectors.toCollection(() -> new ArrayList<>(0)));
+        m2 = muscles.stream().map(Muscle::copyMuscle).collect(Collectors.toCollection(() -> new ArrayList<>(0)));
         if (newID == -1) {
             newID = id;
         }
