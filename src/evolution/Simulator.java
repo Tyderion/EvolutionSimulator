@@ -353,9 +353,9 @@ public class Simulator extends PApplet {
             equal.add(c0);
             for (int i = 1; i < c.size(); i++) {
                 Creature ci = c.get(i);
-                if (ci.d == c0.d) {
+                if (ci.fitness == c0.fitness) {
                     equal.add(ci);
-                } else if (ci.d < c0.d) {
+                } else if (ci.fitness < c0.fitness) {
                     less.add(ci);
                 } else {
                     more.add(ci);
@@ -671,11 +671,11 @@ public class Simulator extends PApplet {
     }
 
     void drawCreature(Creature cj, float x, float y, int toImage) {
-        draw(cj,cj.n, x, y, toImage);
+        draw(cj,cj.nodes, x, y, toImage);
     }
 
     void drawCreaturePieces(ArrayList<Node> n, ArrayList<Muscle> m, float x, float y, int toImage) {
-        draw(new Creature(config, -1, n, m, 0,false,0,0),n,  x, y, toImage);
+        draw(new Creature(config, -1, n, m, false, 0),n,  x, y, toImage);
     }
 
     void drawHistogram(int x, int y, int hw, int hh) {
@@ -773,11 +773,11 @@ public class Simulator extends PApplet {
         textAlign(CENTER);
         text("#" + rank, px, py + 12);
         text("ID: " + cj.id, px, py + 24);
-        text("Fitness: " + nf(cj.d, 0, 3), px, py + 36);
+        text("Fitness: " + nf(cj.fitness, 0, 3), px, py + 36);
         colorMode(HSB, 1);
-        int sp = (cj.n.size() % 10) * 10 + (cj.m.size() % 10);
+        int sp = (cj.nodes.size() % 10) * 10 + (cj.muscles.size() % 10);
         fill(getColor(sp, true));
-        text("Species: S" + (cj.n.size() % 10) + "" + (cj.m.size() % 10), px, py + 48);
+        text("Species: S" + (cj.nodes.size() % 10) + "" + (cj.muscles.size() % 10), px, py + 48);
         colorMode(RGB, 255);
         if (miniSimulation) {
             int py2 = py - 125;
@@ -988,7 +988,7 @@ public class Simulator extends PApplet {
                     toStableConfiguration(nodeNum, muscleNum);
                     adjustToCenter(nodeNum);
                     float heartbeat = random(40, 80);
-                    c[y * 40 + x] = new Creature(config, y * 40 + x + 1, new ArrayList<Node>(n), new ArrayList<Muscle>(m), 0, true, heartbeat, 1.0f);
+                    c[y * 40 + x] = new Creature(config, y * 40 + x + 1, new ArrayList<Node>(n), new ArrayList<Muscle>(m),  true, 1.0f);
                     drawCreature(c[y * 40 + x], x * 3 + 5.5f, y * 2.5f + 3, 0);
                     c[y * 40 + x].checkForOverlap();
                     c[y * 40 + x].checkForLoneNodes();
@@ -1091,7 +1091,7 @@ public class Simulator extends PApplet {
             c2 = quickSort(c2);
             percentile.add(new Float[29]);
             for (int i = 0; i < 29; i++) {
-                percentile.get(gen + 1)[i] = c2.get(p[i]).d;
+                percentile.get(gen + 1)[i] = c2.get(p[i]).fitness;
             }
             creatureDatabase.add(c2.get(999).copyCreature(-1));
             creatureDatabase.add(c2.get(499).copyCreature(-1));
@@ -1107,11 +1107,11 @@ public class Simulator extends PApplet {
                 beginSpecies[i] = 0;
             }
             for (int i = 0; i < 1000; i++) {
-                int bar = floor(c2.get(i).d * histBarsPerMeter - minBar);
+                int bar = floor(c2.get(i).fitness * histBarsPerMeter - minBar);
                 if (bar >= 0 && bar < barLen) {
                     barCounts.get(gen + 1)[bar]++;
                 }
-                int species = (c2.get(i).n.size() % 10) * 10 + c2.get(i).m.size() % 10;
+                int species = (c2.get(i).nodes.size() % 10) * 10 + c2.get(i).muscles.size() % 10;
                 beginSpecies[species]++;
             }
             speciesCounts.add(new Integer[101]);
@@ -1234,8 +1234,8 @@ public class Simulator extends PApplet {
                 c2.set(j2, cj.copyCreature(cj.id + 1000));        //duplicate
 
                 c2.set(999 - j2, cj.modified(cj2.id + 1000));   //mutated offspring 1
-                n = c2.get(999 - j2).n;
-                m = c2.get(999 - j2).m;
+                n = c2.get(999 - j2).nodes;
+                m = c2.get(999 - j2).muscles;
                 toStableConfiguration(n.size(), m.size());
                 adjustToCenter(n.size());
             }
@@ -1376,18 +1376,17 @@ public class Simulator extends PApplet {
     void setGlobalVariables(Creature thisCreature) {
         n.clear();
         m.clear();
-        for (int i = 0; i < thisCreature.n.size(); i++) {
-            n.add(thisCreature.n.get(i).copyNode());
+        for (int i = 0; i < thisCreature.nodes.size(); i++) {
+            n.add(thisCreature.nodes.get(i).copyNode());
         }
-        for (int i = 0; i < thisCreature.m.size(); i++) {
-            m.add(thisCreature.m.get(i).copyMuscle());
+        for (int i = 0; i < thisCreature.muscles.size(); i++) {
+            m.add(thisCreature.muscles.get(i).copyMuscle());
         }
         id = thisCreature.id;
         timer = 0;
         camZoom = 0.01f;
         camX = 0;
         camY = 0;
-        cTimer = thisCreature.creatureTimer;
         simulationTimer = 0;
         energy = baselineEnergy;
         totalNodeNausea = 0;
@@ -1395,6 +1394,6 @@ public class Simulator extends PApplet {
     }
 
     void setFitness(int i) {
-        c[i].d = averageX * 0.2f; // Multiply by 0.2 because a meter is 5 units for some weird reason.
+        c[i].fitness = averageX * 0.2f; // Multiply by 0.2 because a meter is 5 units for some weird reason.
     }
 }
