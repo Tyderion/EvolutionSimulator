@@ -16,7 +16,7 @@ public class Creature implements Drawable {
     public float fitness;
     public int id;
     public boolean alive;
-    public float mutability;
+    private float mutability;
 
     public Creature(Config config, int id, ArrayList<Node> nodes, ArrayList<Muscle> muscles, boolean alive, float mutability) {
         this(config, id, nodes, muscles, 0, alive, mutability);
@@ -94,7 +94,7 @@ public class Creature implements Drawable {
             }
         }
         for (int i = bads.size() - 1; i >= 0; i--) {
-            int b = bads.get(i) + 0;
+            int b = bads.get(i);
             if (b < muscles.size()) {
                 muscles.remove(b);
             }
@@ -133,24 +133,21 @@ public class Creature implements Drawable {
                 ni.axon2 = (int) (Simulator.rand(0, nodes.size()));
             }
         }
-        for (int i = 0; i < muscles.size(); i++) {
-            Muscle mi = muscles.get(i);
+        for (Muscle mi : muscles) {
             if (mi.axon >= nodes.size()) {
                 mi.axon = Muscle.getNewMuscleAxon(nodes.size());
             }
         }
 
-        for (int i = 0; i < nodes.size(); i++) {
-            Node ni = nodes.get(i);
+        for (Node ni : nodes) {
             ni.safeInput = (config.getOperationAxons()[ni.operation] == 0);
         }
         int iterations = 0;
-        boolean didSomething = false;
+        boolean didSomething;
 
         while (iterations < 1000) {
             didSomething = false;
-            for (int i = 0; i < nodes.size(); i++) {
-                Node ni = nodes.get(i);
+            for (Node ni : nodes) {
                 if (!ni.safeInput) {
                     if ((config.getOperationAxons()[ni.operation] == 1 && nodes.get(ni.axon1).safeInput) ||
                             (config.getOperationAxons()[ni.operation] == 2 && nodes.get(ni.axon1).safeInput && nodes.get(ni.axon2).safeInput)) {
@@ -164,8 +161,7 @@ public class Creature implements Drawable {
             }
         }
 
-        for (int i = 0; i < nodes.size(); i++) {
-            Node ni = nodes.get(i);
+        for (Node ni : nodes) {
             if (!ni.safeInput) { // This node doesn't get its input from a safe place.  CLEANSE IT.
                 ni.operation = 0;
                 ni.value = Simulator.rand(0, 1);
@@ -173,7 +169,7 @@ public class Creature implements Drawable {
         }
     }
 
-    void addRandomNode() {
+    private void addRandomNode() {
         int parentNode = PApplet.floor(Simulator.rand(0, nodes.size()));
         float ang1 = Simulator.rand(0, 2 * PConstants.PI);
         float distance = PApplet.sqrt(Simulator.rand(0, 1));
@@ -200,7 +196,7 @@ public class Creature implements Drawable {
         addRandomMuscle(nextClosestNode, nodes.size() - 1);
     }
 
-    void addRandomMuscle(int tc1, int tc2) {
+    private void addRandomMuscle(int tc1, int tc2) {
         int axon = Muscle.getNewMuscleAxon(nodes.size());
         if (tc1 == -1) {
             tc1 = (int) (Simulator.rand(0, nodes.size()));
@@ -216,7 +212,7 @@ public class Creature implements Drawable {
         muscles.add(new Muscle(config, axon, tc1, tc2, len, Simulator.rand(0.02f, 0.08f)));
     }
 
-    void removeRandomNode() {
+    private void removeRandomNode() {
         int choice = PApplet.floor(Simulator.rand(0, nodes.size()));
         nodes.remove(choice);
         int i = 0;
@@ -227,17 +223,17 @@ public class Creature implements Drawable {
                 i++;
             }
         }
-        for (int j = 0; j < muscles.size(); j++) {
-            if (muscles.get(j).c1 >= choice) {
-                muscles.get(j).c1--;
+        for (Muscle muscle : muscles) {
+            if (muscle.c1 >= choice) {
+                muscle.c1--;
             }
-            if (muscles.get(j).c2 >= choice) {
-                muscles.get(j).c2--;
+            if (muscle.c2 >= choice) {
+                muscle.c2--;
             }
         }
     }
 
-    void removeRandomMuscle() {
+    private void removeRandomMuscle() {
         int choice = PApplet.floor(Simulator.rand(0, muscles.size()));
         muscles.remove(choice);
     }
